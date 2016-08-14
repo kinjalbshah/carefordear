@@ -98,6 +98,11 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
                     case R.id.action_send_command:
                         startSendCommandActivity(device.getId());
                         return true;
+                    case R.id.action_send_geofence:
+                        startSendGeofenceActivity(device.getId());
+                        return true;
+
+
                 }
                 return false;
             }
@@ -115,4 +120,8 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
     private void startSendCommandActivity(long deviceId) {
         startActivity(new Intent(getContext(), SendCommandActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
     }
+    private void startSendGeofenceActivity(long deviceId) {
+        startActivity(new Intent(getContext(), SendGeofenceActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
+    }
+
 }

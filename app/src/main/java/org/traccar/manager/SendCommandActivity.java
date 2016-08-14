@@ -33,4 +33,8 @@ public class SendCommandActivity extends AppCompatActivity {
         }
     }
 
-}
+};
+
+
+
+

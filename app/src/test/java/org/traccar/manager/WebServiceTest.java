@@ -32,7 +32,8 @@ public class WebServiceTest {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .client(client)
-                .baseUrl("http://localhost:8082")
+                .baseUrl("http://54.191.9.108:8082")
+                //.baseUrl("http://localhost:8082")
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
 
