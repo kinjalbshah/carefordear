@@ -12,4 +12,10 @@
         android:title="@string/logout_title"
         app:showAsAction="never" />
 
+    <item
+        android:id="@+id/action_slidingbuttons"
+        android:title="@string/slidingbuttons_title"
+        app:showAsAction="never" />
+
+
 </menu>

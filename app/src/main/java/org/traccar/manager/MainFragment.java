@@ -27,6 +27,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import org.traccar.manager.ui.activity.TestUIActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -97,6 +98,9 @@ public class MainFragment extends SupportMapFragment implements OnMapReadyCallba
                 ((MainApplication) getActivity().getApplication()).removeService();
                 getActivity().finish();
                 startActivity(new Intent(getContext(), LoginActivity.class));
+                return true;
+            case R.id.action_slidingbuttons:
+                startActivity(new Intent(getContext(), TestUIActivity.class));
                 return true;
         }
         return super.onOptionsItemSelected(item);

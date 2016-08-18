@@ -15,6 +15,7 @@
     <string name="send_command_title">Send command</string>
     <string name="settings_title">Settings</string>
     <string name="logout_title">Logout</string>
+    <string name="slidingbuttons_title">Buttons</string>
 
     <string name="settings_url">Server</string>
     <string name="settings_email">Email</string>
@@ -46,5 +47,5 @@
     <string name="command_engine_resume">Engine Resume</string>
     <string name="command_position_periodic">Periodic Reporting</string>
     <string name="command_frequency">Frequency</string>
-
+    <string name="title_activity_test_ui">TestUIActivity</string>
 </resources>
