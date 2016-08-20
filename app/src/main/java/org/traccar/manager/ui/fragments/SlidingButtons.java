@@ -34,6 +34,7 @@ public class SlidingButtons extends Fragment {
 
 
 
+
         buttonsList = new ArrayList();
         animationList = new ArrayList<TranslateAnimation>();
 
@@ -59,17 +60,17 @@ public class SlidingButtons extends Fragment {
             moveRatio--;
         }
 
-        final ImageButton lastButton = (buttonsList.size() > 1) ? (ImageButton) (buttonsList.get(buttonsList.size()-1)):null;
+        ImageButton scroller =  (ImageButton) view.findViewWithTag("scroll");
+        final TranslateAnimation scrollerAnimation = new TranslateAnimation (0, 0, 0, 300  );
+        scrollerAnimation.setDuration(1000);
 
-        if(lastButton != null)
-        {
-            lastButton.setOnClickListener(new View.OnClickListener() {
+       // final ImageButton lastButton = (buttonsList.size() > 1) ? (ImageButton) (buttonsList.get(buttonsList.size()-1)):null;
+
+
+            scroller.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-//                    view.startAnimation(animTranslate);
-//                    animTranslate1.setDuration(1500);
-//                    ((Button) buttonsList.get(0)).startAnimation(animTranslate1);
-
+                    view.startAnimation(scrollerAnimation);
                     int buttonIndex = 0;
                     for(TranslateAnimation animation : animationList)
                     {
@@ -78,7 +79,7 @@ public class SlidingButtons extends Fragment {
                     }
                 }
             });
-        }
+
 
 //        animTranslate.setAnimationListener(new Animation.AnimationListener() {
 //            @Override
