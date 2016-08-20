@@ -9,6 +9,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.ImageButton;
 
 import org.traccar.manager.R;
 
@@ -18,7 +19,7 @@ import java.util.ArrayList;
 
 public class SlidingButtons extends Fragment {
 
-    private ArrayList buttonsList = null;
+    private ArrayList<ImageButton> buttonsList = null;
     private ArrayList<TranslateAnimation> animationList = null;
 
     public SlidingButtons() {
@@ -36,23 +37,29 @@ public class SlidingButtons extends Fragment {
         buttonsList = new ArrayList();
         animationList = new ArrayList<TranslateAnimation>();
 
-        Button tmpButton = null;
+        ImageButton tmpButton = null;
         int counter = 1;
 
 
-        while((tmpButton = (Button) view.findViewWithTag("Button"+counter))!=null)
-        {
+        while((tmpButton = (ImageButton) view.findViewWithTag("Button"+counter))!=null) {
             System.out.println(tmpButton);
             buttonsList.add(tmpButton);
-            //TranslateAnimation animation = new TranslateAnimation (0, 0, tmpButton.getY(), tmpButton.getY() + (counter * tmpButton.getHeight() + (counter * 5)));
-            TranslateAnimation animation = new TranslateAnimation (0, 0, 0, 100 * (counter-1));
-            animation.setDuration(1000);
-            animation.setRepeatCount(0);
-            animationList.add(animation);
             counter++;
         }
 
-        final Button lastButton = (buttonsList.size() > 1) ? (Button) (buttonsList.get(buttonsList.size()-1)):null;
+        int moveRatio = buttonsList.size()-1;
+        for(ImageButton button: buttonsList)
+        {
+            //TranslateAnimation animation = new TranslateAnimation (0, 0, tmpButton.getY(), tmpButton.getY() + (counter * tmpButton.getHeight() + (counter * 5)));
+            TranslateAnimation animation = new TranslateAnimation (0, 0, 0, 100 * moveRatio );
+            animation.setDuration(1000);
+            animation.setRepeatCount(0);
+            animationList.add(animation);
+            //counter++;
+            moveRatio--;
+        }
+
+        final ImageButton lastButton = (buttonsList.size() > 1) ? (ImageButton) (buttonsList.get(buttonsList.size()-1)):null;
 
         if(lastButton != null)
         {
@@ -66,7 +73,7 @@ public class SlidingButtons extends Fragment {
                     int buttonIndex = 0;
                     for(TranslateAnimation animation : animationList)
                     {
-                        ((Button) buttonsList.get(buttonIndex)).startAnimation(animation);
+                        ((ImageButton) buttonsList.get(buttonIndex)).startAnimation(animation);
                         buttonIndex++;
                     }
                 }
