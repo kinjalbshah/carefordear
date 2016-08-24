@@ -34,14 +34,13 @@ public class SlidingButtons extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_sliding_buttons, container, false);
+        final View view = inflater.inflate(R.layout.fragment_sliding_buttons, container, false);
 
 
 
 
         buttonsList = new ArrayList();
         yPixelPositionList = new ArrayList();
-        yDPPositionList = new ArrayList();
         forwardAnimationList = new ArrayList<TranslateAnimation>();
         reverseAnimationList = new ArrayList<TranslateAnimation>();
 
@@ -63,15 +62,15 @@ public class SlidingButtons extends Fragment {
         int reverseTranslateRatio = 0;
         for(ImageButton button: buttonsList)
         {
-            int yStartPx = 0;//Math.round(10 * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
+            int yStartPx = 0;
             int yStartDP = ((forwardTranslateRatio*button.getHeight())+(forwardTranslateRatio*60));
             int yDeltaPx = Math.round((yStartDP) * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
-            yPixelPositionList.add(yDeltaPx+Math.round(10 * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)));// relative margin
-            yDPPositionList.add(yStartDP+10);
-            Toast.makeText(getContext(), "From "+yStartPx +" to " +yDeltaPx, Toast.LENGTH_SHORT);
-            TranslateAnimation forwardAnimation = //= new TranslateAnimation (0, 0, 0, 100 * forwardTranslateRatio );
 
-            new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0,Animation.RELATIVE_TO_SELF, 0, Animation.ABSOLUTE, yStartPx, Animation.ABSOLUTE,yDeltaPx);
+            yPixelPositionList.add(yDeltaPx);
+
+
+            TranslateAnimation forwardAnimation =
+                    new TranslateAnimation(Animation.RELATIVE_TO_SELF, 0,Animation.RELATIVE_TO_SELF, 0, Animation.ABSOLUTE, yStartPx, Animation.ABSOLUTE,yDeltaPx);
 
             forwardAnimation.setDuration(1000);
             forwardAnimation.setRepeatCount(0);
@@ -92,25 +91,18 @@ public class SlidingButtons extends Fragment {
 
         int scrollStartPx =  Math.round(scroller.getY() * (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT));
 
-        final int scrollDeltaDP =  (buttonsList.size() * 95) ;
-
-        final int scrollDeltaPx =   yPixelPositionList.get(0) + Math.round(((buttonsList.get(0).getHeight()) *  (displayMetrics.xdpi / DisplayMetrics.DENSITY_DEFAULT)));
-        Toast.makeText(getContext(), "From "+scrollStartPx +" to " +scrollDeltaPx, Toast.LENGTH_SHORT);
+        final int scrollDeltaPx =   yPixelPositionList.get(0);
+        Toast.makeText(getContext(), "From "+scrollStartPx +" to " +scrollDeltaPx, Toast.LENGTH_SHORT).show();
 
 
         final TranslateAnimation forwardScrollerAnimation =
                 new TranslateAnimation (Animation.RELATIVE_TO_SELF,0,Animation.RELATIVE_TO_SELF, 0, Animation.ABSOLUTE, scrollStartPx, Animation.ABSOLUTE, scrollDeltaPx  );
-        //new TransateAnimation(0, Animation.RELATIVE)
+
         forwardScrollerAnimation.setDuration(1000);
 
         final TranslateAnimation reverseScrollerAnimation = //new TranslateAnimation (0, 0,  300,0  );
-                new TranslateAnimation (Animation.RELATIVE_TO_SELF,0,Animation.RELATIVE_TO_SELF, 0, Animation.ABSOLUTE,0,  Animation.ABSOLUTE, -scrollDeltaPx  );
+                new TranslateAnimation (Animation.RELATIVE_TO_SELF,0,Animation.RELATIVE_TO_SELF, 0, Animation.ABSOLUTE,scrollStartPx,  Animation.ABSOLUTE, -scrollDeltaPx  );
         reverseScrollerAnimation.setDuration(1000);
-        //reverseScrollerAnimation.setRepeatMode(Animation.REVERSE);
-
-
-        // final ImageButton lastButton = (buttonsList.size() > 1) ? (ImageButton) (buttonsList.get(buttonsList.size()-1)):null;
-
 
             scroller.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -152,15 +144,20 @@ public class SlidingButtons extends Fragment {
             @Override
             public void onAnimationEnd(Animation animation) {
 
-                scroller.setY(scrollDeltaDP);
+
+                Animation nullAnimation = new TranslateAnimation(0.0f,0.0f,0.0f,0.0f);
+                nullAnimation.setDuration(1);
+                view.startAnimation(nullAnimation);
+
                 int buttonIndex = buttonsList.size()-1;
                 for(int i=buttonIndex; buttonIndex >= 0; buttonIndex--) {
-                    buttonsList.get(buttonIndex).setY(yPixelPositionList.get(buttonIndex));
+                    buttonsList.get(buttonIndex).setVisibility(View.INVISIBLE);
+                    buttonsList.get(buttonIndex).setTranslationY(yPixelPositionList.get(buttonIndex));
+                    buttonsList.get(buttonIndex).setVisibility(View.VISIBLE);
 
                 }
-
-               // scroller.setY(yPosStart-20);
-            }
+                scroller.setY(scrollDeltaPx + Math.round(((60) *  (getContext().getResources().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT))));
+           }
 
             @Override
             public void onAnimationRepeat(Animation animation) {
@@ -178,14 +175,16 @@ public class SlidingButtons extends Fragment {
             @Override
             public void onAnimationEnd(Animation animation) {
 
+                Animation nullAnimation = new TranslateAnimation(0.0f,0.0f,0.0f,0.0f);
+                nullAnimation.setDuration(1);
+                view.startAnimation(nullAnimation);
+
                 scroller.setY(60+30); //including the margin
                 int buttonIndex = buttonsList.size()-1;
                 for(int i=buttonIndex; buttonIndex >= 0; buttonIndex--) {
                     buttonsList.get(buttonIndex).setY(15);
 
                 }
-
-                // scroller.setY(yPosStart-20);
             }
 
             @Override
