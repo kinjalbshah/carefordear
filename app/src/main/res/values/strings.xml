@@ -13,6 +13,8 @@
 
     <string name="devices_title">Devices</string>
     <string name="send_command_title">Send command</string>
+    <string name="send_geofence_title">Send Geofence</string>
+    <string name="get_geofence_list">List Geofence</string>
     <string name="settings_title">Settings</string>
     <string name="logout_title">Logout</string>
     <string name="slidingbuttons_title">Buttons</string>
@@ -35,6 +37,8 @@
     <string name="action_show_on_map">Show on map</string>
     <string name="action_send_command">Send command</string>
     <string name="action_send_geofence">Send geofence</string>
+    <string name="action_get_geofence">Get geofence</string>
+
     <string name="command_command">Command</string>
     <string name="command_frequency_frequency">Frequency</string>
     <string name="command_frequency_unit">Unit</string>

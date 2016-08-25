@@ -16,6 +16,7 @@
 package org.traccar.manager;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.Toast;
 
 import retrofit2.Call;
@@ -46,6 +47,8 @@ public abstract class WebServiceCallback<T> implements Callback<T> {
     public void onFailure(Call<T> call, Throwable t) {
         CharSequence text = context.getResources().getText(R.string.error_connection);
         Toast.makeText(context, text + ": " + t.getMessage(), Toast.LENGTH_LONG).show();
+        String stacktrace = Log.getStackTraceString(t) ;
+        Log.d("onfailure_stack trace", stacktrace);
     }
 
 }

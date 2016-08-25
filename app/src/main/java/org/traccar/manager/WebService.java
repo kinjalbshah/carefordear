@@ -19,6 +19,7 @@ import org.traccar.manager.model.Command;
 import org.traccar.manager.model.CommandType;
 import org.traccar.manager.model.Device;
 import org.traccar.manager.model.User;
+import org.traccar.manager.model.Geofence;
 
 import java.util.List;
 
@@ -46,4 +47,7 @@ public interface WebService {
 
     @POST("/api/commands")
     Call<Command> sendCommand(@Body Command command);
+
+    @GET("/api/geofences")
+    Call<List<Geofence>> getGeofences();
 }

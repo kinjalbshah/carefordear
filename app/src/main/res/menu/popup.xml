@@ -14,4 +14,8 @@
         android:id="@+id/action_send_geofence"
         android:title="@string/action_send_geofence" />
 
+    <item
+        android:id="@+id/action_get_geofence"
+        android:title="@string/action_get_geofence" />
+
 </menu>

@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.JavaNetCookieJar;
 import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
@@ -41,7 +42,8 @@ public class MainApplication extends MultiDexApplication {
     public static final String PREFERENCE_EMAIL = "email";
     public static final String PREFERENCE_PASSWORD = "password";
 
-    private static final String DEFAULT_SERVER = "http://demo.traccar.org"; // local - http://10.0.2.2:8082
+    private static final String DEFAULT_SERVER = "http://demo2.traccar.org"; // local - http://10.0.2.2:8082
+    //private static final String DEFAULT_SERVER = "http://54.191.9.108:5013";
 
     public interface GetServiceCallback {
         void onServiceReady(OkHttpClient client, Retrofit retrofit, WebService service);
@@ -90,11 +92,19 @@ public class MainApplication extends MultiDexApplication {
         String email = preferences.getString(PREFERENCE_EMAIL, null);
         final String password = preferences.getString(PREFERENCE_PASSWORD, null);
 
+        //For logging rest calls
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+        // Rest calls logging
+
+
         CookieManager cookieManager = new CookieManager();
         cookieManager.setCookiePolicy(CookiePolicy.ACCEPT_ALL);
         client = new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
-                .cookieJar(new JavaNetCookieJar(cookieManager)).build();
+                .cookieJar(new JavaNetCookieJar(cookieManager))
+                .addNetworkInterceptor(logging)
+                .build();
 
         retrofit = new Retrofit.Builder()
                 .client(client)
