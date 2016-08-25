@@ -145,18 +145,16 @@ public class SlidingButtons extends Fragment {
             public void onAnimationEnd(Animation animation) {
 
 
-                Animation nullAnimation = new TranslateAnimation(0.0f,0.0f,0.0f,0.0f);
-                nullAnimation.setDuration(1);
-                view.startAnimation(nullAnimation);
 
                 int buttonIndex = buttonsList.size()-1;
                 for(int i=buttonIndex; buttonIndex >= 0; buttonIndex--) {
-                    buttonsList.get(buttonIndex).setVisibility(View.INVISIBLE);
+                    buttonsList.get(buttonIndex).clearAnimation();
                     buttonsList.get(buttonIndex).setTranslationY(yPixelPositionList.get(buttonIndex));
-                    buttonsList.get(buttonIndex).setVisibility(View.VISIBLE);
+
 
                 }
-                scroller.setY(scrollDeltaPx + Math.round(((60) *  (getContext().getResources().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT))));
+                scroller.clearAnimation();
+                scroller.setY(scrollDeltaPx + Math.round(((58) *  (getContext().getResources().getDisplayMetrics().xdpi / DisplayMetrics.DENSITY_DEFAULT))));
            }
 
             @Override
@@ -175,16 +173,17 @@ public class SlidingButtons extends Fragment {
             @Override
             public void onAnimationEnd(Animation animation) {
 
-                Animation nullAnimation = new TranslateAnimation(0.0f,0.0f,0.0f,0.0f);
-                nullAnimation.setDuration(1);
-                view.startAnimation(nullAnimation);
 
-                scroller.setY(60+30); //including the margin
+
+
                 int buttonIndex = buttonsList.size()-1;
                 for(int i=buttonIndex; buttonIndex >= 0; buttonIndex--) {
+                    buttonsList.get(buttonIndex).clearAnimation();
                     buttonsList.get(buttonIndex).setY(15);
 
                 }
+                scroller.clearAnimation();
+                scroller.setY(60+30); //including the margin
             }
 
             @Override
