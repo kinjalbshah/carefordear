@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import org.traccar.manager.model.Geofence;
 
@@ -47,6 +48,9 @@ public class GetGeofenceFragment extends ListFragment implements View.OnClickLis
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // Use deviceId to have rest call based on deviceID. we don't have currently
+        final long deviceId = getActivity().getIntent().getExtras().getLong(EXTRA_DEVICE_ID);
+
         final MainApplication application = (MainApplication) getActivity().getApplication();
         application.getServiceAsync(new MainApplication.GetServiceCallback() {
             @Override
@@ -76,23 +80,20 @@ public class GetGeofenceFragment extends ListFragment implements View.OnClickLis
         final Geofence geofence = (Geofence) view.getTag();
         PopupMenu popup = new PopupMenu(getActivity(), view);
 
-        popup.getMenuInflater().inflate(R.menu.popup, popup.getMenu());
+        popup.getMenuInflater().inflate(R.menu.geofence_popup, popup.getMenu());
 
-        // Will change later to edit / delete
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.action_show_on_map:
-                        finishDevicesActivity(geofence.getId());
+                    case R.id.action_geofence_edit:
+                        //finishDevicesActivity(geofence.getId());
+                        Toast.makeText(getContext(), "Add class to handle geofence edit", Toast.LENGTH_LONG).show();
                         return true;
-                    case R.id.action_send_command:
-                        startSendCommandActivity(geofence.getId());
+                    case R.id.action_geofence_delete:
+                        //startSendCommandActivity(geofence.getId());
+                        Toast.makeText(getContext(), "Add class to handle geofence delete", Toast.LENGTH_LONG).show();
                         return true;
-                    case R.id.action_send_geofence:
-                        startSendGeofenceActivity(geofence.getId());
-                        return true;
-
 
                 }
                 return false;
