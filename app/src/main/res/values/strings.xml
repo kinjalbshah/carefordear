@@ -38,6 +38,7 @@
     <string name="action_send_command">Send command</string>
     <string name="action_send_geofence">Send geofence</string>
     <string name="action_get_geofence">Get geofence</string>
+    <string name="action_add_geofence">Add geofence</string>
     <string name="action_edit_geofence">Edit geofence</string>
     <string name="action_delete_geofence">Delete geofence</string>
 

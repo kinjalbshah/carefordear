@@ -1,18 +1,3 @@
-/*
- * Copyright 2015 - 2016 Anton Tananaev (anton.tananaev@gmail.com)
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package org.traccar.manager;
 
 import android.app.Activity;
@@ -24,8 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
-import org.traccar.manager.model.Device;
+import org.traccar.manager.model.Geofence;
+
 
 import java.util.List;
 
@@ -33,13 +20,17 @@ import okhttp3.OkHttpClient;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 
-public class DevicesFragment extends ListFragment implements View.OnClickListener {
+/**
+ * Created by cf4 on 23-08-2016.
+ */
+
+public class AddGeofenceFragment extends ListFragment implements View.OnClickListener {
 
     public static final String EXTRA_DEVICE_ID = "deviceId";
+    /*  Comment for time being add later for delete/edit of geofence */
+    class PopupAdapter extends ArrayAdapter<Geofence> {
 
-    class PopupAdapter extends ArrayAdapter<Device> {
-
-        PopupAdapter(List<Device> items) {
+        PopupAdapter(List<Geofence> items) {
             super(getActivity(), R.layout.list_item, android.R.id.text1, items);
         }
 
@@ -48,7 +39,7 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
             View view = super.getView(position, convertView, container);
             View popupText = view.findViewById(android.R.id.text1);
             popupText.setTag(getItem(position));
-            popupText.setOnClickListener(DevicesFragment.this);
+            popupText.setOnClickListener(AddGeofenceFragment.this);
             return view;
         }
     }
@@ -57,13 +48,16 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        // Use deviceId to have rest call based on deviceID. we don't have currently
+        final long deviceId = getActivity().getIntent().getExtras().getLong(EXTRA_DEVICE_ID);
+
         final MainApplication application = (MainApplication) getActivity().getApplication();
         application.getServiceAsync(new MainApplication.GetServiceCallback() {
             @Override
             public void onServiceReady(OkHttpClient client, Retrofit retrofit, WebService service) {
-                service.getDevices().enqueue(new WebServiceCallback<List<Device>>(getContext()) {
+                service.getGeofences().enqueue(new WebServiceCallback<List<Geofence>>(getContext()) {
                     @Override
-                    public void onSuccess(Response<List<Device>> response) {
+                    public void onSuccess(Response<List<Geofence>> response) {
                         setListAdapter(new PopupAdapter(response.body()));
                     }
                 });
@@ -83,34 +77,23 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
 
     private void showPopupMenu(View view) {
         final PopupAdapter adapter = (PopupAdapter) getListAdapter();
-        final Device device = (Device) view.getTag();
+        final Geofence geofence = (Geofence) view.getTag();
         PopupMenu popup = new PopupMenu(getActivity(), view);
 
-        popup.getMenuInflater().inflate(R.menu.popup, popup.getMenu());
+        popup.getMenuInflater().inflate(R.menu.geofence_popup, popup.getMenu());
 
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case R.id.action_show_on_map:
-                        finishDevicesActivity(device.getId());
+                    case R.id.action_geofence_edit:
+                        //finishDevicesActivity(geofence.getId());
+                        Toast.makeText(getContext(), "Add class to handle geofence edit", Toast.LENGTH_LONG).show();
                         return true;
-                    case R.id.action_send_command:
-                        startSendCommandActivity(device.getId());
+                    case R.id.action_geofence_delete:
+                        //startSendCommandActivity(geofence.getId());
+                        Toast.makeText(getContext(), "Add class to handle geofence delete", Toast.LENGTH_LONG).show();
                         return true;
-                    case R.id.action_send_geofence:
-                        startSendGeofenceActivity(device.getId());
-                        return true;
-
-                    case R.id.action_get_geofence:
-                        startGetGeofenceActivity(device.getId());
-                        return true;
-
-                    case R.id.action_add_geofence:
-                        startAddGeofenceActivity(device.getId());
-                        return true;
-
-
 
                 }
                 return false;
@@ -133,12 +116,8 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
         startActivity(new Intent(getContext(), SendGeofenceActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
     }
 
-    private void startGetGeofenceActivity(long deviceId) {
+    private void startgetGeofenceActivity(long deviceId) {
         startActivity(new Intent(getContext(), GetGeofenceActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
-    }
-
-    private void startAddGeofenceActivity(long deviceId) {
-        startActivity(new Intent(getContext(), AddGeofenceActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
     }
 
 }
