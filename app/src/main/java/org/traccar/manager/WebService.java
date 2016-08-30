@@ -50,4 +50,7 @@ public interface WebService {
 
     @GET("/api/geofences")
     Call<List<Geofence>> getGeofences();
+
+    @POST("/api/geofences")
+    Call<Geofence> saveGeofence(@Body Geofence geofence);
 }

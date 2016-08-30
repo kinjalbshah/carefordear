@@ -55,4 +55,13 @@
     <string name="command_position_periodic">Periodic Reporting</string>
     <string name="command_frequency">Frequency</string>
     <string name="title_activity_test_ui">TestUIActivity</string>
-</resources>
+
+
+    <string name="fill_radius">Set Radius</string>
+    <string name="addressGeocode">Drag marker or give street name,zip below</string>
+    <string name="address">eg.outer ring rd,560045</string>
+    <string name="getLatLong">Get Add</string>
+    <string name="geofencename">Enter Geofence Name</string>
+    <string name="savegeofence">Save</string>
+
+    </resources>

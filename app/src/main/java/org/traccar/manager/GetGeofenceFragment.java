@@ -88,7 +88,7 @@ public class GetGeofenceFragment extends ListFragment implements View.OnClickLis
                 switch (menuItem.getItemId()) {
                     case R.id.action_geofence_edit:
                         //finishDevicesActivity(geofence.getId());
-                        Toast.makeText(getContext(), "Add class to handle geofence edit", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Add class to handle geofence edit and change finishDevicesActivity", Toast.LENGTH_LONG).show();
                         return true;
                     case R.id.action_geofence_delete:
                         //startSendCommandActivity(geofence.getId());
