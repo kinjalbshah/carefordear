@@ -46,8 +46,10 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.traccar.manager.model.DeviceGeofence;
 import org.traccar.manager.model.Geofence;
 
+import retrofit2.Call;
 import retrofit2.Response;
 
 import java.util.Random;
@@ -241,19 +243,7 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
 
     }
 
-    /*   Comment GooglePlayServicesAvailable  for timebeing
-    private boolean isGooglePlayServicesAvailable() {
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(context);
-        if (ConnectionResult.SUCCESS == status) {
-            return true;
-        } else {
-            GooglePlayServicesUtil.getErrorDialog(status, context, 0).show();
-            return false;
 
-        }
-    }
-
-   */
 
     public void onMapReady(GoogleMap map) {
       //  Toast.makeText(context, "on map ready : " , Toast.LENGTH_LONG).show();
@@ -492,15 +482,14 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
 
    //Function to post data to server
    public void savegeofence()  {
-       int geofenceid ;
+       long geofenceid ;
        radius = mRadiusBar.getProgress();
        Geofence geofence = new Geofence();
+       final DeviceGeofence devicegeofence = new DeviceGeofence();
 
-       geofenceid = randomInt(100,1000);
-
-       geofence.setId(geofenceid);     // will insert in geofence, device table first
+       geofence.setId(11111);     // will insert in geofence, device table first
        geofence.setName(geofencename.getText().toString());
-       geofence.setDescription("testing geofence from app");
+       geofence.setDescription("testing geofence from app");   //Should change this to read from user entry
 
        String temparea = "CIRCLE (" + geofencelat + " " + geofencelong + "," + radius + ")" ;
        geofence.setArea(temparea);
@@ -516,19 +505,38 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
                     @Override
                     public void onSuccess(Response<org.traccar.manager.model.Geofence> response) {
                         Toast.makeText(getContext(), R.string.command_sent, Toast.LENGTH_LONG).show();
-                    }
-                });
 
+                        devicegeofence.setGeofenceId(response.body().getId());
+                        devicegeofence.setDeviceId(deviceId);
+
+                        // Data inserted in geofences table . Get the geofence id and insert in geofence/device table to map geofence and device
+                        // Send geofenceid + device id ;
+                        service.saveDeviceGeofence(devicegeofence).enqueue(new WebServiceCallback<DeviceGeofence>(getContext()) {
+
+                            @Override
+                            public void onSuccess(Response<DeviceGeofence> response) {
+                                Toast.makeText(getContext(), "Geofence created suuccesfully", Toast.LENGTH_LONG).show();
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<DeviceGeofence> call, Throwable t) {
+                                CharSequence text = context.getResources().getText(R.string.error_connection);
+                                Toast.makeText(context, "Geofence Device insertion failed", Toast.LENGTH_LONG).show();
+                                String stacktrace = Log.getStackTraceString(t);
+                                Log.d("Geofence add failed", stacktrace);
+                                // Call to delete geofences from the geofence table so that orphan geofence is not there.
+                            }
+
+                        });
+                    }
+
+                });
 
                // getActivity().finish();
             }
 
-    public static int randomInt(int min, int max) {
-        Random rand = new Random();
-        int randomNum = rand.nextInt((max - min) + 1) + min;
 
-        return randomNum;
-    }
     }
 
 

@@ -42,7 +42,7 @@
 
         <activity
             android:name=".AddGeofenceActivity"
-            android:label="@string/get_geofence_list" />
+            android:label="@string/add_geofence_list" />
 
         <activity
             android:name=".ui.activity.TestUIActivity"

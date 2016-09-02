@@ -18,14 +18,17 @@ package org.traccar.manager;
 import org.traccar.manager.model.Command;
 import org.traccar.manager.model.CommandType;
 import org.traccar.manager.model.Device;
+import org.traccar.manager.model.DeviceGeofence;
 import org.traccar.manager.model.User;
 import org.traccar.manager.model.Geofence;
 
 import java.util.List;
 
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
@@ -49,8 +52,15 @@ public interface WebService {
     Call<Command> sendCommand(@Body Command command);
 
     @GET("/api/geofences")
-    Call<List<Geofence>> getGeofences();
+    Call<List<Geofence>> getGeofences(@Query("deviceId") long deviceId);
 
     @POST("/api/geofences")
     Call<Geofence> saveGeofence(@Body Geofence geofence);
-}
+
+    @POST("/api/devices/geofences")
+    Call<DeviceGeofence> saveDeviceGeofence(@Body DeviceGeofence devicegeofence);
+
+    @DELETE("/api/geofences/{id}")
+    Call<ResponseBody> deleteGeofences(@Path("id") long geofenceId);
+
+    }

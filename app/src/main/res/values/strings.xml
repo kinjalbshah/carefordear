@@ -15,6 +15,8 @@
     <string name="send_command_title">Send command</string>
     <string name="send_geofence_title">Send Geofence</string>
     <string name="get_geofence_list">List Geofence</string>
+    <string name="add_geofence_list">Add Geofence</string>
+
     <string name="settings_title">Settings</string>
     <string name="logout_title">Logout</string>
     <string name="slidingbuttons_title">Buttons</string>
@@ -58,7 +60,7 @@
 
 
     <string name="fill_radius">Set Radius</string>
-    <string name="addressGeocode">Drag marker or give street name,zip below</string>
+    <string name="addressGeocode">Drag pointer on map or Give street name,zip below</string>
     <string name="address">eg.outer ring rd,560045</string>
     <string name="getLatLong">Get Add</string>
     <string name="geofencename">Enter Geofence Name</string>
