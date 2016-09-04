@@ -476,7 +476,8 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
         if (address != null && address.trim().length() != 0 )
             //Add check for 6 continous digit for zip code  TODO
             validAddress = true;
-//        Toast.makeText(context,  "Valid Address" ,Toast.LENGTH_SHORT).show();
+//        Toast.makeT
+// ext(context,  "Valid Address" ,Toast.LENGTH_SHORT).show();
         return validAddress ;
     }
 

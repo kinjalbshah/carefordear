@@ -1,0 +1,126 @@
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/GridLayout1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:columnCount="2"
+    tools:context=".GridLayoutActivity" >
+
+
+    <TextView
+        android:id="@+id/messageTV"
+        android:layout_column="0"
+        android:layout_row="0"
+        android:layout_columnSpan="2"
+        android:layout_gravity="fill_horizontal"
+        android:textSize="14dp"
+        android:textColor="#ff0040"
+        android:text="Configure your tracker device" />
+
+
+    <EditText
+        android:id="@+id/trackerPhoneNumberET"
+        android:layout_column="0"
+        android:layout_row="1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Enter Tracker Phone" />
+
+    <Button android:id="@+id/setTrackerPhnoBt"
+        android:layout_column="1"
+        android:layout_row="1"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Tracker Phone"/>
+
+    <EditText
+        android:id="@+id/adminPhoneNo"
+        android:layout_column="0"
+        android:layout_row="2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Enter Admin Phone" />
+
+    <Button android:id="@+id/setAdminPhoneBt"
+        android:layout_column="1"
+        android:layout_row="2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set Admin Phone"/>
+
+    <EditText
+        android:id="@+id/sosPhoneNo1ET"
+        android:layout_column="0"
+        android:layout_row="3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Enter Phone 1 for SOS alert" />
+
+    <Button android:id="@+id/setSOSPhoneBt1"
+        android:layout_column="1"
+        android:layout_row="3"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set SOS Phone 1"/>
+
+    <EditText
+        android:id="@+id/sosPhoneNo2ET"
+        android:layout_column="0"
+        android:layout_row="4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Enter Phone 2 for SOS alert" />
+
+    <Button android:id="@+id/setSOSPhoneBt2"
+        android:layout_column="1"
+        android:layout_row="4"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set SOS Phone 2"/>
+
+    <EditText
+        android:id="@+id/sosPhoneNo3ET"
+        android:layout_column="0"
+        android:layout_row="5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Enter Phone 3 for SOS alert" />
+
+    <Button android:id="@+id/setSOSPhoneBt3"
+        android:layout_column="1"
+        android:layout_row="5"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set SOS Phone 3"/>
+
+    <EditText
+        android:id="@+id/sosPhoneNo4ET"
+        android:layout_column="0"
+        android:layout_row="6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:inputType="phone"
+        android:hint="Enter Phone 4 for SOS alert" />
+
+    <Button android:id="@+id/setSOSPhoneBt4"
+        android:layout_column="1"
+        android:layout_row="6"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Set SOS Phone 4"/>
+
+
+    <Button android:id="@+id/getTrackerPositionBt"
+        android:layout_column="0"
+        android:layout_row="7"
+        android:layout_columnSpan="2"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="Get Tracker Position"/>
+
+</GridLayout>

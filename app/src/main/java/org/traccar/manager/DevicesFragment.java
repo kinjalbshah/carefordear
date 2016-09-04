@@ -110,6 +110,10 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
                         startAddGeofenceActivity(device.getId());
                         return true;
 
+                    case R.id.action_sms_configure:
+                        startSmsConfigureActivity(device.getId());
+                        return true;
+
 
 
                 }
@@ -139,6 +143,10 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
 
     private void startAddGeofenceActivity(long deviceId) {
         startActivity(new Intent(getContext(), AddGeofenceActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
+    }
+
+    private void startSmsConfigureActivity(long deviceId) {
+        startActivity(new Intent(getContext(), SmsConfigureActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
     }
 
 }

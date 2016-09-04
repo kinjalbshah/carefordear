@@ -22,4 +22,10 @@
         android:id="@+id/action_add_geofence"
         android:title="@string/action_add_geofence" />
 
+    <item
+        android:id="@+id/action_sms_configure"
+        android:title="@string/action_sms_configure" />
+
+
+
 </menu>
