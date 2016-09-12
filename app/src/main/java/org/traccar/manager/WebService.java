@@ -15,6 +15,8 @@
  */
 package org.traccar.manager;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.traccar.manager.model.Command;
 import org.traccar.manager.model.CommandType;
 import org.traccar.manager.model.Device;
@@ -22,6 +24,8 @@ import org.traccar.manager.model.DeviceGeofence;
 import org.traccar.manager.model.User;
 import org.traccar.manager.model.Geofence;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.ResponseBody;
@@ -32,6 +36,7 @@ import retrofit2.http.DELETE;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -62,5 +67,8 @@ public interface WebService {
 
     @DELETE("/api/geofences/{id}")
     Call<ResponseBody> deleteGeofences(@Path("id") long geofenceId);
+
+    @GET("/maps/api/geocode/json?sensor=false")
+    Call<JSONObject> getAddress(@Query("address") String address);
 
     }

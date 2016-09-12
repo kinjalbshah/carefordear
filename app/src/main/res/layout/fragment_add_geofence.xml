@@ -41,11 +41,14 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:imeActionLabel="Submit"
             android:inputType="textPostalAddress|textCapWords"/>
+
 
         <Button android:text="@string/getLatLong"
             android:id="@+id/getLatLong"
-
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"/>
@@ -66,7 +69,11 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="3"
-            android:inputType="textPostalAddress|textCapWords"/>
+            android:inputType="textAutoComplete|textPostalAddress|textCapWords"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+
+            />
 
         <Button android:text="@string/savegeofence"
             android:id="@+id/savegeofence"

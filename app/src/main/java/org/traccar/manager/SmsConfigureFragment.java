@@ -13,13 +13,17 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.telephony.SmsManager;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class SmsConfigureFragment extends Fragment {
@@ -89,12 +93,25 @@ public class SmsConfigureFragment extends Fragment {
 
         // Set preference based on device
 
-
          deviceId = getActivity().getIntent().getExtras().getLong(EXTRA_DEVICE_ID);
 
         //  Set tracker phone number
         trackerPhoneNumberET= (EditText) rootView.findViewById(R.id.trackerPhoneNumberET);
         setTrackerPhnoBt = (Button) rootView.findViewById(R.id.setTrackerPhnoBt);
+
+        trackerPhoneNumberET.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // do something, e.g. set your TextView here via .setText()
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+        });
 
         setTrackerPhnoBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {

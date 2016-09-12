@@ -11,9 +11,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
@@ -40,8 +43,10 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -49,10 +54,16 @@ import javax.net.ssl.HttpsURLConnection;
 import org.traccar.manager.model.DeviceGeofence;
 import org.traccar.manager.model.Geofence;
 
+import okhttp3.JavaNetCookieJar;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -119,6 +130,39 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
         getLatLong = (Button) rootView.findViewById(R.id.getLatLong);
         getAddress = (EditText) rootView.findViewById(R.id.getAddress);
 
+        getAddress.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // do something, e.g. set your TextView here via .setText()
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    getLatLong();
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+        geofencename.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    // do something, e.g. set your TextView here via .setText()
+                    InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
+
+
         SupportMapFragment supportMapFragment =
                 (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.googleMap);
 
@@ -126,6 +170,7 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
             supportMapFragment.getMapAsync(this);
 
         }
+
 
 
         // Create an instance of GoogleAPIClient.
@@ -152,6 +197,7 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
                     // Check if network is available and call the geocode URL with the address given to get Lat Long
                     if (networkInfo != null && networkInfo.isConnected()) {
                         new getLatLongAsyncTask().execute(getAddressValue);
+                        //getAddressOnMap(getAddressValue);
 
                     } else {
                         Toast.makeText(context, "No network connection available.", Toast.LENGTH_LONG).show();
@@ -161,8 +207,6 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
 
                 else
                     Toast.makeText(context, "Please enter a valid address", Toast.LENGTH_SHORT).show();
-
-
             }
         });
         //
@@ -181,7 +225,10 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
 
             }
         });
-            return rootView;
+
+
+
+                return rootView;
         }
 
     public void onStart() {
@@ -481,6 +528,26 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
         return validAddress ;
     }
 
+//Function to get Latlong
+    public void getLatLong() {
+
+        getAddressValue = getAddress.getText().toString();
+        if (validateAddress(getAddressValue)) {
+            // Check if network is available and call the geocode URL with the address given to get Lat Long
+            if (networkInfo != null && networkInfo.isConnected()) {
+                new getLatLongAsyncTask().execute(getAddressValue);
+
+            } else {
+                Toast.makeText(context, "No network connection available.", Toast.LENGTH_LONG).show();
+
+            }
+        }
+
+        else
+            Toast.makeText(context, "Please enter a valid address", Toast.LENGTH_SHORT).show();
+
+
+    }
    //Function to post data to server
    public void savegeofence()  {
        long geofenceid ;
@@ -505,7 +572,7 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
 
                     @Override
                     public void onSuccess(Response<org.traccar.manager.model.Geofence> response) {
-                        Toast.makeText(getContext(), R.string.command_sent, Toast.LENGTH_LONG).show();
+                        Toast.makeText(getContext(), "Data inserted in geofence ", Toast.LENGTH_LONG).show();
 
                         devicegeofence.setGeofenceId(response.body().getId());
                         devicegeofence.setDeviceId(deviceId);
@@ -538,7 +605,12 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
             }
 
 
-    }
+
+       }
+
+
+
+
 
 
 

@@ -25,6 +25,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:inputType="phone"
+        android:imeOptions="actionDone"
         android:hint="Enter Tracker Phone" />
 
     <Button android:id="@+id/setTrackerPhnoBt"
