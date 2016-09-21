@@ -138,7 +138,7 @@ public static final String EXTRA_DEVICE_ID = "deviceId";
                     // do something, e.g. set your TextView here via .setText()
                     InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    getLatLong();
+                   // getLatLong();
                     return true;
                 }
                 return false;

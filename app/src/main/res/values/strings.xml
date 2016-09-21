@@ -16,7 +16,12 @@
     <string name="send_geofence_title">Send Geofence</string>
     <string name="get_geofence_list">List Geofence</string>
     <string name="add_geofence_list">Add Geofence</string>
+    <string name="get_event_list">List Events</string>
     <string name="configure_sms">Configure Device</string>
+
+    <string name="event_from_date">From Date</string>
+    <string name="event_to_date">To Date</string>
+
 
 
     <string name="settings_title">Settings</string>
@@ -45,9 +50,8 @@
     <string name="action_add_geofence">Add geofence</string>
     <string name="action_edit_geofence">Edit geofence</string>
     <string name="action_delete_geofence">Delete geofence</string>
+    <string name="action_list_event">Events in last 7 days</string>
     <string name="action_sms_configure">Configure Device</string>
-
-    action_sms_configure
 
     <string name="command_command">Command</string>
     <string name="command_frequency_frequency">Frequency</string>
@@ -70,5 +74,9 @@
     <string name="getLatLong">Get Add</string>
     <string name="geofencename">Enter Geofence Name</string>
     <string name="savegeofence">Save</string>
+
+    <string name="hd_eventtype">Type</string>
+    <string name="hd_geofenceid">Geofence</string>
+    <string name="hd_eventtime">Time</string>
 
     </resources>

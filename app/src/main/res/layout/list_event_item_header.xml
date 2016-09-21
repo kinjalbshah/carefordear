@@ -1,0 +1,44 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    >
+
+    <TextView
+        android:id="@+id/hd_eventtime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingRight="15dp"
+        android:textColor="#1361C6"
+        android:text="@string/hd_eventtime"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:id="@+id/hd_eventtype"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="#1361C6"
+        android:text="@string/hd_eventtype"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/hd_geofenceid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="8dp"
+        android:textColor="#1361C6"
+        android:text="@string/hd_geofenceid"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/hd_eventtype"
+        android:layout_alignBottom="@+id/hd_eventtype" />
+
+
+</RelativeLayout>

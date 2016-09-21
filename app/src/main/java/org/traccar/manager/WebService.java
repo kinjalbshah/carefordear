@@ -20,9 +20,11 @@ import org.json.JSONObject;
 import org.traccar.manager.model.Command;
 import org.traccar.manager.model.CommandType;
 import org.traccar.manager.model.Device;
+import org.traccar.manager.model.DeviceEvent;
 import org.traccar.manager.model.DeviceGeofence;
 import org.traccar.manager.model.User;
 import org.traccar.manager.model.Geofence;
+import org.traccar.manager.model.DeviceEvent;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -67,6 +69,9 @@ public interface WebService {
 
     @DELETE("/api/geofences/{id}")
     Call<ResponseBody> deleteGeofences(@Path("id") long geofenceId);
+
+    @GET("/api/reports/events")
+    Call<List<DeviceEvent>> getDeviceEvents(@Query("deviceId") long deviceId, @Query("type") String type, @Query("from") String from_date, @Query("to") String to_date);
 
     @GET("/maps/api/geocode/json?sensor=false")
     Call<JSONObject> getAddress(@Query("address") String address);

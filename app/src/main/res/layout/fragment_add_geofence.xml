@@ -43,8 +43,9 @@
             android:layout_weight="3"
             android:imeOptions="actionDone"
             android:singleLine="true"
-            android:imeActionLabel="Submit"
             android:inputType="textPostalAddress|textCapWords"/>
+    <!--        android:imeActionLabel="Submit" -->
+
 
 
         <Button android:text="@string/getLatLong"

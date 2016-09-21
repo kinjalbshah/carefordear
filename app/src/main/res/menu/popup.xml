@@ -23,6 +23,10 @@
         android:title="@string/action_add_geofence" />
 
     <item
+        android:id="@+id/action_list_event"
+        android:title="@string/action_list_event" />
+
+    <item
         android:id="@+id/action_sms_configure"
         android:title="@string/action_sms_configure" />
 

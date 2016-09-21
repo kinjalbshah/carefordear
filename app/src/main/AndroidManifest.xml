@@ -49,6 +49,10 @@
             android:label="@string/add_geofence_list" />
 
         <activity
+            android:name=".listEventActivity"
+            android:label="@string/get_event_list" />
+
+        <activity
             android:name=".SmsConfigureActivity"
             android:label="@string/configure_sms" />
 
