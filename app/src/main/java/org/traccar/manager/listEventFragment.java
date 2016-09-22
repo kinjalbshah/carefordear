@@ -140,14 +140,14 @@ public class listEventFragment extends Fragment {
         year1 = cal.get(Calendar.YEAR);
         month1 = cal.get(Calendar.MONTH) + 1;
         day1 = cal.get(Calendar.DATE);
-        String todate = year1 + "-" + month1 + "-" + day1 + "T00:00:00.000" ;
+        String todate = year1 + "-" + month1 + "-" + day1 + "T23:59:59.000" ;   //to cover all events including today
         String convertedToDate = convertDate(todate, TimeZone.getDefault().getID() ,"UTC" );
 
         Log.i("todate: " , convertedToDate );
 
 // Generate from date - currently 7 days back - ie  a week
 
-        cal.add(Calendar.DATE, -7);
+        cal.add(Calendar.DATE, -6);
 
         // get the value of all the calendar date fields.
         int year2, month2, day2;
