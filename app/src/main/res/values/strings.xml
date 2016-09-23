@@ -13,7 +13,7 @@
 
     <string name="devices_title">Devices</string>
     <string name="send_command_title">Send command</string>
-    <string name="send_geofence_title">Send Geofence</string>
+    <string name="get_route_title">Get Route</string>
     <string name="get_geofence_list">List Geofence</string>
     <string name="add_geofence_list">Add Geofence</string>
     <string name="get_event_list">Events in last 7 days</string>
@@ -45,11 +45,11 @@
 
     <string name="action_show_on_map">Show on map</string>
     <string name="action_send_command">Send command</string>
-    <string name="action_send_geofence">Send geofence</string>
-    <string name="action_get_geofence">Get geofence</string>
-    <string name="action_add_geofence">Add geofence</string>
-    <string name="action_edit_geofence">Edit geofence</string>
-    <string name="action_delete_geofence">Delete geofence</string>
+    <string name="action_get_route">Get Route</string>
+    <string name="action_get_geofence">Get Geofence</string>
+    <string name="action_add_geofence">Add Geofence</string>
+    <string name="action_edit_geofence">Edit Geofence</string>
+    <string name="action_delete_geofence">Delete Geofence</string>
     <string name="action_list_event">List Events</string>
     <string name="action_sms_configure">Configure Device</string>
 

@@ -38,8 +38,8 @@
             android:name=".SendCommandActivity"
             android:label="@string/send_command_title" />
         <activity
-            android:name=".SendGeofenceActivity"
-            android:label="@string/send_geofence_title" />
+            android:name=".GetRouteActivity"
+            android:label="@string/get_route_title" />
         <activity
             android:name=".GetGeofenceActivity"
             android:label="@string/get_geofence_list" />

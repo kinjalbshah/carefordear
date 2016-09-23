@@ -11,8 +11,8 @@
         android:title="@string/action_send_command" />
 
     <item
-        android:id="@+id/action_send_geofence"
-        android:title="@string/action_send_geofence" />
+        android:id="@+id/action_get_route"
+        android:title="@string/action_get_route" />
 
     <item
         android:id="@+id/action_get_geofence"

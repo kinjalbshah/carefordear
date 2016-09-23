@@ -22,6 +22,7 @@ import org.traccar.manager.model.CommandType;
 import org.traccar.manager.model.Device;
 import org.traccar.manager.model.DeviceEvent;
 import org.traccar.manager.model.DeviceGeofence;
+import org.traccar.manager.model.Route;
 import org.traccar.manager.model.User;
 import org.traccar.manager.model.Geofence;
 import org.traccar.manager.model.DeviceEvent;
@@ -72,6 +73,10 @@ public interface WebService {
 
     @GET("/api/reports/events")
     Call<List<DeviceEvent>> getDeviceEvents(@Query("deviceId") long deviceId, @Query("type") String type, @Query("from") String from_date, @Query("to") String to_date);
+
+    @GET("/api/reports/route")
+    Call<List<Route>> getRouteEvents(@Query("deviceId") long deviceId, @Query("type") String type, @Query("from") String from_date, @Query("to") String to_date);
+
 
     @GET("/maps/api/geocode/json?sensor=false")
     Call<JSONObject> getAddress(@Query("address") String address);

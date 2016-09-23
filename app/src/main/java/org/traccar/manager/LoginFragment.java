@@ -57,6 +57,7 @@ public class LoginFragment extends Fragment {
                     emailInput.getText().length() > 0 && passwordInput.getText().length() > 0);
         }
 
+
     };
 
     @Nullable

@@ -104,6 +104,8 @@ public class listEventFragment extends Fragment {
             if (deviceevent.getType().matches("geofenceExit|geofenceEnter" ))
             {
                 String tempgeofencename =  DeviceGeofenceMap.get(deviceevent.getGeofenceId());
+
+                if(tempgeofencename == null || tempgeofencename.isEmpty()) tempgeofencename = "*Geofnc Deleted" ;
                 // Display 15 chars onl of geofence due to space constraints
                 tempgeofencename = (tempgeofencename.length() > 15) ? tempgeofencename.substring(0,14) : tempgeofencename ;
                 geofenceid.setText(tempgeofencename);
@@ -159,7 +161,7 @@ public class listEventFragment extends Fragment {
         String convertedFromDate = convertDate(fromdate , TimeZone.getDefault().getID() ,"UTC" );
 
 
-        Log.i("from date: " , convertedFromDate );
+        Log.i("from date: ", convertedFromDate );
         final String from_date = convertedFromDate + "Z";
         final String to_date = convertedToDate + "Z";
         final String type = "%";

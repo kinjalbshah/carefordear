@@ -5,14 +5,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
-import org.traccar.manager.model.DeviceGeofence;
 import org.traccar.manager.model.Geofence;
 
 
@@ -140,7 +138,7 @@ public class GetGeofenceFragment extends ListFragment implements View.OnClickLis
 
 
     private void startSendGeofenceActivity(long deviceId) {
-        startActivity(new Intent(getContext(), SendGeofenceActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
+        startActivity(new Intent(getContext(), GetRouteActivity.class).putExtra(EXTRA_DEVICE_ID, deviceId));
     }
 
     private void startgetGeofenceActivity(long deviceId) {
