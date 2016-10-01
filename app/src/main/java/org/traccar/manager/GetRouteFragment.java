@@ -1,5 +1,6 @@
 package org.traccar.manager;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -52,6 +55,7 @@ public class GetRouteFragment extends Fragment
 
     private List<Route> routeList;
     private List<LatLng> latLngList = new ArrayList<LatLng>() ;
+    private List<Integer> markerPosition = new ArrayList<Integer>();
     private Polyline polyline ;
 
     private Polyline mMutablePolyline;
@@ -95,20 +99,7 @@ public class GetRouteFragment extends Fragment
         googleMap.setContentDescription("Google Map with polylines.");
 
         Log.i("inside map ready", "MAP");
-
-        // A simple polyline with the default options from Melbourne-Adelaide-Perth.
-
-        /*
-
-        // A geodesic polyline that goes around the world.
-        mClickablePolyline = map.addPolyline((new PolylineOptions())
-                .add(LHR, AKL, LAX, JFK, LHR)
-                .width(5)
-                .color(Color.BLUE)
-                .geodesic(true)
-                .clickable(mClickabilityCheckbox.isChecked()));
-
-                */
+    
 
 
         // Add a listener for polyline clicks that changes the clicked polyline's color.
@@ -120,12 +111,12 @@ public class GetRouteFragment extends Fragment
                 polyline.setColor(strokeColor);
             }
         });
+        
+        populateRoute();
     }
 
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    private void populateRoute()  {
 
         // Use deviceId to have rest call based on deviceID.
         final long deviceId = getActivity().getIntent().getExtras().getLong(EXTRA_DEVICE_ID);
@@ -163,15 +154,22 @@ public class GetRouteFragment extends Fragment
         final String to_date = convertedToDate + "Z";
         final String type = "%";
 
+
         final MainApplication application = (MainApplication) getActivity().getApplication();
         final WebService service = application.getService();
+
         service.getRouteEvents(deviceId, type, from_date, to_date).enqueue(new WebServiceCallback<List<Route>>(getContext()) {
+         final ProgressDialog  mProgress = ProgressDialog.show(getActivity(), "Generating Route", "Please wait", true, true);
             @Override
             public void onSuccess(Response<List<Route>> response) {
                 routeList = response.body();
 
                 Toast.makeText(getContext(), "Events retrieved succesfully", Toast.LENGTH_LONG).show();
                 populateRouteonMap();
+                
+                if (isAdded()) {
+                    mProgress.dismiss();
+                 }
             }
 
             @Override
@@ -181,6 +179,10 @@ public class GetRouteFragment extends Fragment
                 String stacktrace = Log.getStackTraceString(t);
                 Log.i("Route retrieval failed", stacktrace);
                 // Call to delete geofences from the geofence table so that orphan geofence is not there.
+                
+                if (isAdded()) {
+                     mProgress.dismiss();
+                }
             }
 
         });
@@ -188,19 +190,85 @@ public class GetRouteFragment extends Fragment
 
     public void populateRouteonMap() {
 
+        // Instantiating the class MarkerOptions to plot marker on the map
+
         PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE);
+        int markerPositionIndex = 0 ;
+        int numberofmarkers = 0;
+
+        //Depending on number of points,show markers. For > 100000 show 1000; 50000- 1 lakh show 500 ; 10000-50000 show 50; <1000 show 10
+        if (routeList.size() >= 100000) { numberofmarkers = 1000; }
+            else { if ((routeList.size() >= 50000) && (routeList.size() < 100000))  { numberofmarkers = 500; }
+                 else { if ((routeList.size() >= 10000) && (routeList.size() < 50000))  { numberofmarkers = 50; }
+                      else { if ((routeList.size() >= 1000) && (routeList.size() < 10000))  { numberofmarkers = 25; }
+                             else { numberofmarkers = 10;}
+
+        }}}
+          Log.i("numberofmarker :", String.valueOf(numberofmarkers));
+        //Depending on number of points,show markers. For > 100000 show 1000; 50000- 1 lakh show 500 ; 10000-50000 show 50; <1000 show 10
+        int markerStep = routeList.size() / numberofmarkers ;
+        // Add point for polyline and also save the marker positions to add marker once the polyline is drawn
+       // latLngList.clear();   // clear the list to avoid duplication
+       // markerPosition.clear();
+       googleMap.clear();
         for (int z = 0; z < routeList.size(); z++) {
             double routeLat = routeList.get(z).getLatitude();
             double routeLng = routeList.get(z).getLongitude();
             LatLng point = new LatLng(routeLat, routeLng);
-            latLngList.add(z,point);
+          //  latLngList.add(z,point);
             options.add(point);
+
+            /*
+            if ((z % numberofmarkers) == 0 ) {
+                markerPosition.add(z);
+            }
+            */
         }
+
         polyline = googleMap.addPolyline(options);
 
+        // As there is a delay in adding markers ,move camera to starting point so that user can see some action
+        // Add marker at first  position and showInfowindow
+        Route firstroute = routeList.get(0);
+        Marker firstMarker =  googleMap.addMarker(new MarkerOptions().position(new LatLng(firstroute.getLatitude(), firstroute.getLongitude()))
+                .title("Start Route")   // change for first , last , position
+                .snippet("speed :" + firstroute.getSpeed() + "\n distance: " + firstroute.getAttributes().getDistance() +
+                        "total distance: " + firstroute.getAttributes().getTotalDistance() +
+                        "\n servertime: " + firstroute.getServerTime()));
+
+        firstMarker.showInfoWindow();
+
         // Move the map so that it is at the first point
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLngList.get(0)));
-        googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        // googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLngList.get(0)));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(firstroute.getLatitude(), firstroute.getLongitude())));
+        googleMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+
+        // add markers now
+     //   MarkerOptions markerOptions = new MarkerOptions();
+        for (int k = markerStep; k < routeList.size(); k+= markerStep) { // Get the markers at the market step position
+            Route routemarker = routeList.get(k);  // Get details of the route point identified for marker
+            //String markerTitle = (k == 0 ) ? "Start" : k + "th Marker" ;
+            String markerTitle = k + "th Point" ;
+            googleMap.addMarker(new MarkerOptions().position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
+                    .title(markerTitle)   // change for first , last , position
+                    .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
+                            "total distance: " + routemarker.getAttributes().getTotalDistance() +
+                            "servertime: " + routemarker.getServerTime()));
+
+            Log.i("k:lat:long:st ", String.valueOf(k) + ":" + String.valueOf(routemarker.getLatitude()) +
+             " " + ":" + String.valueOf(routemarker.getLongitude()) + ":" + routemarker.getServerTime());
+
+        }
+
+        // Add marker at last position
+        Route routemarker = routeList.get(routeList.size() - 1);
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
+                .title("End")   // change for first , last , position
+                .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
+                        "total distance: " + routemarker.getAttributes().getTotalDistance() +
+                        "servertime: " + routemarker.getServerTime()));
+
+
 
         Log.i("inside actcreate", "MAP");
     }

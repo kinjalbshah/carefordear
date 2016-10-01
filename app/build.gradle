@@ -1,14 +1,7 @@
 apply plugin: 'com.android.application'
 //test5
 android {
-    signingConfigs {
-        care4dear {
-            keyAlias 'care4dear'
-            keyPassword 'Care4Dear'
-            storeFile file('F:/keystore/android/carefordear.jks')
-            storePassword 'Care4Dear'
-        }
-    }
+
     compileSdkVersion 24
     buildToolsVersion "23.0.3"
     defaultConfig {
@@ -32,13 +25,7 @@ android {
         debug {
             manifestPlaceholders = [ mapApiKeyValue:"AIzaSyDByAcIkkAnqng6XjJOWsLQDyqkP_uFDaY"]
         }
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt')
-            debuggable true
-            signingConfig signingConfigs.care4dear
-            manifestPlaceholders = [ mapApiKeyValue:"AIzaSyAP_UzUSOlnduAYkIBQsWc9AgCxxTmJB3A"]
-        }
+
     }
 }
 

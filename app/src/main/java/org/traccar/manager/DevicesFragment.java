@@ -36,6 +36,8 @@ import retrofit2.Retrofit;
 public class DevicesFragment extends ListFragment implements View.OnClickListener {
 
     public static final String EXTRA_DEVICE_ID = "deviceId";
+    public static final String EXTRA_DEVICE_STATUS = "deviceStatus";
+
 
     class PopupAdapter extends ArrayAdapter<Device> {
 
@@ -93,7 +95,7 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
             public boolean onMenuItemClick(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.action_show_on_map:
-                        finishDevicesActivity(device.getId());
+                        finishDevicesActivity(device.getId(), device.getStatus());
                         return true;
                     case R.id.action_send_command:
                         startSendCommandActivity(device.getId());
@@ -129,9 +131,14 @@ public class DevicesFragment extends ListFragment implements View.OnClickListene
         popup.show();
     }
 
-    private void finishDevicesActivity(long deviceId) {
+    private void finishDevicesActivity(long deviceId, String deviceStatus) {
         Activity activity = getActivity();
-        activity.setResult(MainFragment.RESULT_SUCCESS, new Intent().putExtra(EXTRA_DEVICE_ID, deviceId));
+        Intent deviceIntent = new Intent();
+        deviceIntent.putExtra(EXTRA_DEVICE_ID, deviceId);
+        deviceIntent.putExtra(EXTRA_DEVICE_STATUS, deviceStatus);
+
+        //activity.setResult(MainFragment.RESULT_SUCCESS, new Intent().putExtra(EXTRA_DEVICE_ID, deviceId ));
+        activity.setResult(MainFragment.RESULT_SUCCESS, deviceIntent);
         activity.finish();
     }
 

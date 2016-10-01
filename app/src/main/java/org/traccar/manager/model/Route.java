@@ -7,7 +7,9 @@ package org.traccar.manager.model;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.jar.Attributes;
+import org.traccar.manager.model.Route_Attribute ;
+
+//import java.util.jar.Attributes;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Route {
@@ -38,7 +40,7 @@ public class Route {
 
     private Long id;
 
-    private Attributes attributes;
+    private Route_Attribute attributes;
 
     /**
      *
@@ -305,20 +307,21 @@ public class Route {
      * @return
      * The attributes
      */
-    /* Commented for timebeing for attributes
+    // Commented for timebeing for attributes
     @JsonProperty("attributes")
-    public Attributes getAttributes() {
+    public Route_Attribute getAttributes() {
         return attributes;
     }
 
-    /**
+    /*
      *
      * @param attributes
      * The attributes
+     */
 
     @JsonProperty("attributes")
-    public void setAttributes(Attributes attributes) {
+    public void setAttributes(Route_Attribute attributes) {
         this.attributes = attributes;
     }
-    */
+
 }
