@@ -20,6 +20,8 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -50,6 +52,10 @@ public class GetRouteFragment extends Fragment
 
     public static final String EXTRA_DEVICE_ID = "deviceId";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
+    private static final int REPORT_DURATION = 6;
+    private Circle geofenceCircle;
+    private Circle geofenceCircle2;
+
     private SimpleDateFormat dateFormatter;
     private GoogleMap googleMap;
 
@@ -137,7 +143,7 @@ public class GetRouteFragment extends Fragment
 
 // Generate from date - currently 7 days back - ie  a week
 
-        cal.add(Calendar.DATE, -6);
+        cal.add(Calendar.DATE, -REPORT_DURATION);
 
         // get the value of all the calendar date fields.
         int year2, month2, day2;
@@ -164,7 +170,7 @@ public class GetRouteFragment extends Fragment
             public void onSuccess(Response<List<Route>> response) {
                 routeList = response.body();
 
-                Toast.makeText(getContext(), "Events retrieved succesfully", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Route retrieved succesfully", Toast.LENGTH_LONG).show();
                 populateRouteonMap();
                 
                 if (isAdded()) {
@@ -271,6 +277,37 @@ public class GetRouteFragment extends Fragment
 
 
         Log.i("inside actcreate", "MAP");
+
+        // FOR ROBERT TESTING
+        //  Showgeofence circle 1
+
+         double geolat1 = 13.06364754974461;
+         double geolong1 =  77.63830348849297 ;
+         double georadius1 = 283 ;
+
+        if ( geofenceCircle != null )
+            geofenceCircle.remove();
+
+        geofenceCircle = googleMap.addCircle(new CircleOptions()
+                .center(new LatLng(geolat1, geolong1)).radius(georadius1)
+                        .fillColor(Color.parseColor("#B2A9F6")));
+
+        // FOR ROBERT TESTING
+        //  Showgeofence circle 2
+
+        double geolat2 = 13.048178355156535;
+        double geolong2 =  77.62225583195686 ;
+        double georadius2 = 259 ;
+
+        if ( geofenceCircle2 != null )
+            geofenceCircle2.remove();
+
+
+
+        geofenceCircle2 = googleMap.addCircle(new CircleOptions()
+                .center(new LatLng(geolat2, geolong2)).radius(georadius2)
+                .fillColor(Color.parseColor("#B2A9F6")));
+
     }
 
     public static String convertDate(String inputdate, String fromtimezone, String totimezone)
