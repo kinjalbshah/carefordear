@@ -27,12 +27,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
+import org.traccar.manager.model.Geofence;
 import org.traccar.manager.ui.activity.TestUIActivity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -110,11 +112,35 @@ public class MainFragment extends SupportMapFragment implements OnMapReadyCallba
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_DEVICE && resultCode == RESULT_SUCCESS) {
             long deviceId = data.getLongExtra(DevicesFragment.EXTRA_DEVICE_ID, 0);
+            String deviceStatus = data.getStringExtra(DevicesFragment.EXTRA_DEVICE_STATUS);
+            
             Position position = positions.get(deviceId);
             if (position != null) {
                 map.moveCamera(CameraUpdateFactory.newLatLng(
                         new LatLng(position.getLatitude(), position.getLongitude())));
-                markers.get(deviceId).showInfoWindow();
+                map.animateCamera(CameraUpdateFactory.zoomTo(15));
+                Marker deviceStatusMarker = markers.get(deviceId) ;
+               
+                //markers.get(deviceId).showInfoWindow();
+                // Set color based on device being online/offline
+                
+                switch (deviceStatus) {
+                case "online":
+                    deviceStatusMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    deviceStatusMarker.setTitle("Online");
+                    break;
+                case "offline":    // Never coming here as code can't figure between nonreachable and offline
+                     deviceStatusMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                     deviceStatusMarker.setTitle("Offline");
+                    break;
+                default:
+                    deviceStatusMarker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                    deviceStatusMarker.setTitle("Offline");
+                    break;
+               }
+               
+               //show the marker 
+               deviceStatusMarker.showInfoWindow();
             }
         }
     }
@@ -200,6 +226,7 @@ public class MainFragment extends SupportMapFragment implements OnMapReadyCallba
                     markers.put(deviceId, marker);
                 } else {
                     marker.setPosition(location);
+
                 }
                 marker.setSnippet(formatDetails(position));
                 positions.put(deviceId, position);
