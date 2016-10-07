@@ -5,6 +5,49 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal" android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/routeFromDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="From date"/>
+
+        <ImageButton
+            android:id="@+id/fromDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:contentDescription="From Date"
+            android:src="@drawable/calendar" />
+
+
+        <TextView
+            android:id="@+id/routeToDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="To date"/>
+
+     <ImageButton
+         android:id="@+id/toDate"
+         android:layout_width="0dp"
+         android:layout_height="wrap_content"
+         android:layout_weight="1"
+         android:contentDescription="To Date"
+         android:src="@drawable/calendar" />
+
+        <Button android:text="@string/get_route_title"
+            android:id="@+id/getRoute"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+
+
+    </LinearLayout>
+     
     <fragment
         android:id="@+id/map"
         class="com.google.android.gms.maps.SupportMapFragment"

@@ -1,16 +1,21 @@
 package org.traccar.manager;
 
+import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.DatePicker;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -56,6 +61,7 @@ public class GetRouteFragment extends Fragment
     public static final String EXTRA_DEVICE_ID = "deviceId";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private static final int REPORT_DURATION = 6;
+    private DatePickerFragment mDatePickerDialogFragment;
     private Circle geofenceCircle;
     private Circle geofenceCircle2;
 
@@ -75,6 +81,21 @@ public class GetRouteFragment extends Fragment
 
 
     Context context;
+    
+    ImageButton fromDate, toDate;
+    TextView routeFromDate, routeToDate;
+    private Button routeButton;
+
+    final Calendar c = Calendar.getInstance();
+    int year = c.get(Calendar.YEAR);
+    int month = c.get(Calendar.MONTH);
+    int day = c.get(Calendar.DAY_OF_MONTH);
+
+
+    
+   public GetRouteFragment() {  
+     // Required empty public constructor  
+   }  
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -88,16 +109,64 @@ public class GetRouteFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_get_route, parent, false);
         context = rootView.getContext();
 
+   // Get fromDate
+     fromDate = (ImageButton)rootView.findViewById(R.id.fromDate); // getting the image button in fragment_blank.xml  
+     routeFromDate = (TextView) rootView.findViewById(R.id.routeFromDate); // getting the TextView in fragment_blank.xml
+        // Get toDate
+        toDate = (ImageButton)rootView.findViewById(R.id.toDate);
+        routeToDate = (TextView) rootView.findViewById(R.id.routeToDate);
+
+        //Get route button
+
+        routeButton = (Button)rootView.findViewById(R.id.getRoute);
+
+        View.OnClickListener showDatePicker = new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final View vv = v;
+
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int Year, int Month, int Day) {
+                        StringBuilder sb = new StringBuilder().append(Year).append("-").append(Month + 1).append("-").append(Day);
+                        String formattedDate = sb.toString();
+                        if (vv.getId() == R.id.fromDate ) { //From date was clicked {
+
+                        routeFromDate.setText(formattedDate);
+                    } else {//EndDate button was clicked {
+                            routeToDate.setText(formattedDate);
+                    //do the stuff
+                }
+            }
+        }, year, month, day);
+        datePickerDialog.show();
+    }
+};
+        fromDate.setOnClickListener(showDatePicker);
+        toDate.setOnClickListener(showDatePicker);
+
+        routeButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Log.e(TAG, "inside onclick" + ". ");
+
+                if  (validateDate())  {
+                    populateRoute();
+                }
+
+            }
+        });
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.map);
-
 
         mapFragment.getMapAsync(this);
 
         return rootView;
     }
 
+
+
+    // on get route button click - do date validation - not null ; todate < fromdate
     @Override
     public void onMapReady(GoogleMap map) {
         // Override the default content description on the view, for accessibility mode.
@@ -136,7 +205,8 @@ public class GetRouteFragment extends Fragment
             }
         });
 
-        populateRoute();
+       //ITI
+       // populateRoute();
     }
 
 
@@ -144,32 +214,12 @@ public class GetRouteFragment extends Fragment
 
         // Use deviceId to have rest call based on deviceID.
         final long deviceId = getActivity().getIntent().getExtras().getLong(EXTRA_DEVICE_ID);
-        //Generate today and today -7 to get events for  a week
-        // create a calendar
-        Calendar cal = Calendar.getInstance();
 
-        // get the value of all the calendar date fields.
-        int year1, month1, day1;
-        year1 = cal.get(Calendar.YEAR);
-        month1 = cal.get(Calendar.MONTH) + 1;
-        day1 = cal.get(Calendar.DATE);
-        String todate = year1 + "-" + month1 + "-" + day1 + "T23:59:59.000";   //to cover all events including today
+        String todate = routeToDate.getText().toString() + "T23:59:59.000" ;
         String convertedToDate = convertDate(todate, TimeZone.getDefault().getID(), "UTC");
-
-
         Log.i("todate: ", convertedToDate);
 
-// Generate from date - currently 7 days back - ie  a week
-
-        cal.add(Calendar.DATE, -REPORT_DURATION);
-
-        // get the value of all the calendar date fields.
-        int year2, month2, day2;
-        year2 = cal.get(Calendar.YEAR);
-        month2 = cal.get(Calendar.MONTH) + 1;
-        day2 = cal.get(Calendar.DATE);
-
-        String fromdate = year2 + "-" + month2 + "-" + day2 + "T00:00:00.000";
+        String fromdate = routeFromDate.getText().toString() +  "T00:00:00.000";
         String convertedFromDate = convertDate(fromdate, TimeZone.getDefault().getID(), "UTC");
 
 
@@ -255,13 +305,15 @@ public class GetRouteFragment extends Fragment
         // As there is a delay in adding markers ,move camera to starting point so that user can see some action
         // Add marker at first  position and showInfowindow
         Route firstroute = routeList.get(0);
-        Marker firstMarker =  googleMap.addMarker(new MarkerOptions()
+        iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+        Marker firstMarker = googleMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Start")))
                 .position(new LatLng(firstroute.getLatitude(), firstroute.getLongitude()))
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                        // .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                 .title("Start")   // change for first , last , position
                 .snippet("speed :" + firstroute.getSpeed() + "\n distance: " + firstroute.getAttributes().getDistance() +
                         "total distance: " + firstroute.getAttributes().getTotalDistance() +
-                        "\n servertime: " + firstroute.getServerTime()));
+                        "\n devicetime: " + firstroute.getDeviceTime()));
 
         firstMarker.showInfoWindow();
 
@@ -276,14 +328,14 @@ public class GetRouteFragment extends Fragment
             Route routemarker = routeList.get(k);  // Get details of the route point identified for marker
             //String markerTitle = (k == 0 ) ? "Start" : k + "th Marker" ;
             String markerTitle = k + "th Point" ;
-            //iconFactory.setStyle(IconGenerator.STYLE_GREEN);
+            iconFactory.setStyle(IconGenerator.STYLE_DEFAULT);
             googleMap.addMarker(new MarkerOptions()
                     .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(String.valueOf(k))))
                     .position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
                     .title(markerTitle)
                     .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
                             "total distance: " + routemarker.getAttributes().getTotalDistance() +
-                            "servertime: " + routemarker.getServerTime())
+                            "device time: " + routemarker.getDeviceTime())
                     .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV()));
 
             Log.i("k:lat:long:st ", String.valueOf(k) + ":" + String.valueOf(routemarker.getLatitude()) +
@@ -293,12 +345,16 @@ public class GetRouteFragment extends Fragment
 
         // Add marker at last position
         Route routemarker = routeList.get(routeList.size() - 1);
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+        iconFactory.setStyle(IconGenerator.STYLE_BLUE);
+        googleMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Stop")))
+                .position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
+                //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                 .title("End")   // change for first , last , position
                 .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
                         "total distance: " + routemarker.getAttributes().getTotalDistance() +
-                        "servertime: " + routemarker.getServerTime()));
+                        "device time: " + routemarker.getDeviceTime()
+                ));
 
 
 
@@ -366,5 +422,36 @@ public class GetRouteFragment extends Fragment
         }
 
     }
+
+    public Boolean validateDate() {
+       boolean  dateflag = true;
+       String getFromDate = routeFromDate.getText().toString();
+        String getToDate = routeToDate.getText().toString();
+
+        try {
+        if ( getFromDate.isEmpty() || getToDate.isEmpty() )
+        {    Toast.makeText(context, "Please enter From and To date", Toast.LENGTH_SHORT).show();
+                dateflag = false ;
+        }
+        else
+        {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            Date validFromDate = sdf.parse(getFromDate);
+            Date validToDate = sdf.parse( getToDate);
+
+            if (validFromDate.after(validToDate)) {
+                Toast.makeText(context, "From date should be less than To date", Toast.LENGTH_SHORT).show();
+                dateflag = false;
+            }
+            else
+            {dateflag = true; }
+        }
+        return dateflag ;
+        } catch (ParseException e) {
+            Log.i("Date Conversion", "Error in parsing");
+            return false;
+        }
+    }   // end of function
+
 
 }
