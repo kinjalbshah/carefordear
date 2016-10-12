@@ -79,4 +79,9 @@
     <string name="hd_geofenceid">Geofence</string>
     <string name="hd_eventtime">Time</string>
 
-    </resources>
+    <string name="hd_routeid">S.No</string>
+    <string name="hd_routetime">Time</string>
+    <string name="hd_routeaddress">Address</string>
+
+
+</resources>

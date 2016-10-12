@@ -313,7 +313,7 @@ public class GetRouteFragment extends Fragment
                 .title("Start")   // change for first , last , position
                 .snippet("speed :" + firstroute.getSpeed() + "\n distance: " + firstroute.getAttributes().getDistance() +
                         "total distance: " + firstroute.getAttributes().getTotalDistance() +
-                        "\n devicetime: " + firstroute.getDeviceTime()));
+                      "\n devicetime: " + convertDate(firstroute.getDeviceTime(), "America/New_York", TimeZone.getDefault().getID())));
 
         firstMarker.showInfoWindow();
 
@@ -335,11 +335,14 @@ public class GetRouteFragment extends Fragment
                     .title(markerTitle)
                     .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
                             "total distance: " + routemarker.getAttributes().getTotalDistance() +
-                            "device time: " + routemarker.getDeviceTime())
+                            "device time: " + convertDate(routemarker.getDeviceTime(), "America/New_York", TimeZone.getDefault().getID()))
+
                     .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV()));
 
             Log.i("k:lat:long:st ", String.valueOf(k) + ":" + String.valueOf(routemarker.getLatitude()) +
-                    " " + ":" + String.valueOf(routemarker.getLongitude()) + ":" + routemarker.getServerTime());
+                    " " + ":" + String.valueOf(routemarker.getLongitude()) + ":" +
+                    routemarker.getServerTime()
+            );
 
         }
 
@@ -349,11 +352,11 @@ public class GetRouteFragment extends Fragment
         googleMap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Stop")))
                 .position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
-                //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                        //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                 .title("End")   // change for first , last , position
                 .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
-                        "total distance: " + routemarker.getAttributes().getTotalDistance() +
-                        "device time: " + routemarker.getDeviceTime()
+                                "total distance: " + routemarker.getAttributes().getTotalDistance() +
+                                "device time: " +  convertDate(routemarker.getDeviceTime(), "America/New_York", TimeZone.getDefault().getID())
                 ));
 
 

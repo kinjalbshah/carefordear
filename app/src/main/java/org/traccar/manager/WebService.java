@@ -78,7 +78,6 @@ public interface WebService {
     Call<List<Route>> getRouteEvents(@Query("deviceId") long deviceId, @Query("type") String type, @Query("from") String from_date, @Query("to") String to_date);
 
 
-    @GET("/maps/api/geocode/json?sensor=false")
-    Call<JSONObject> getAddress(@Query("address") String address);
+
 
     }
