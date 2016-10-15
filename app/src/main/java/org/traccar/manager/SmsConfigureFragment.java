@@ -21,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -29,7 +30,8 @@ import android.widget.Toast;
 public class SmsConfigureFragment extends Fragment {
     Context context;
     private String TAG = SmsConfigureFragment.class.getSimpleName();
-    Button setTrackerPhnoBt, setAdminPhoneBt,  setSOSPhoneBt1, setSOSPhoneBt2, setSOSPhoneBt3, setSOSPhoneBt4, setSOSPhoneBt5, setSOSPhoneBt6, getTrackerPositionBt, setdeviceNumberBt;
+    Button setTrackerPhnoBt,   setSOSPhoneBt1, setSOSPhoneBt2, setSOSPhoneBt3, setSOSPhoneBt4, setSOSPhoneBt5, setSOSPhoneBt6, getTrackerPositionBt, setdeviceNumberBt;
+    ImageButton setAdminPhoneBt;
     EditText trackerPhoneNumberET, adminPhoneNo , sosPhoneNo1ET , sosPhoneNo2ET , sosPhoneNo3ET , sosPhoneNo4ET , sosPhoneNo5ET , sosPhoneNo6ET ,deviceNumberET;
 
     private final String pwd = "123456";
@@ -133,7 +135,7 @@ public class SmsConfigureFragment extends Fragment {
         // set Admin phno.
 
         adminPhoneNo = (EditText) rootView.findViewById(R.id.adminPhoneNo);
-        setAdminPhoneBt = (Button) rootView.findViewById(R.id.setAdminPhoneBt);
+        setAdminPhoneBt = (ImageButton) rootView.findViewById(R.id.setAdminPhoneBt);
 
         setAdminPhoneBt.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
@@ -146,11 +148,17 @@ public class SmsConfigureFragment extends Fragment {
                     smsMessage =  pwd + ",sos1," + "0" + adminPhoneNo.getText().toString() + "#";
                     Toast.makeText(getContext(), smsMessage, Toast.LENGTH_SHORT).show();
                     sendSMS(100);
-                }
-                else
-                    Toast.makeText(getContext(),
-                            "Please enter admin phone number.",Toast.LENGTH_SHORT).show();
+                    setAdminPhoneBt.setImageResource(R.drawable.powered_by_google_dark);
 
+
+                }
+                else {
+
+
+
+                    Toast.makeText(getContext(),
+                            "Please enter admin phone number.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
