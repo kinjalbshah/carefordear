@@ -3,6 +3,7 @@ package org.traccar.manager;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -12,15 +13,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.traccar.manager.model.Language;
 import org.traccar.manager.model.Route;
+import org.traccar.manager.model.RouteDetail;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -55,36 +61,34 @@ import java.util.TimeZone;
  * Created by CF4 on 22-09-2016.
  */
 public class GetRouteFragment extends Fragment
-        implements  OnMapReadyCallback {
+        implements  OnMapReadyCallback, AdapterView.OnItemSelectedListener {
 
 
     public static final String EXTRA_DEVICE_ID = "deviceId";
     private static final String DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS";
     private static final int REPORT_DURATION = 6;
+    private static final int NUMBEROFGEOCODE = 10;
     private DatePickerFragment mDatePickerDialogFragment;
     private Circle geofenceCircle;
     private Circle geofenceCircle2;
 
-    private SimpleDateFormat dateFormatter;
     private GoogleMap googleMap;
 
-    private List<Route> routeList;
-    private List<LatLng> latLngList = new ArrayList<LatLng>() ;
-    private List<Integer> markerPosition = new ArrayList<Integer>();
-    private Polyline polyline ;
-
-    private Polyline mMutablePolyline;
-
-    private Polyline mClickablePolyline;
-
-    private CheckBox mClickabilityCheckbox;
+    private List<Route> routeList ;
+    private ArrayList<RouteDetail> routeDetailList = new ArrayList<RouteDetail>();
+    private ArrayList<Language> languageList = new ArrayList<Language>();
+    private Polyline polyline;
+    private String geocode_lang;
 
 
     Context context;
-    
+    Spinner geolngSpinner;
     ImageButton fromDate, toDate;
-    TextView routeFromDate, routeToDate;
-    private Button routeButton;
+    TextView routeFromDate, routeToDate, langtextview;
+    private Button routeButton, routeDetailsButton;
+
+
+
 
     final Calendar c = Calendar.getInstance();
     int year = c.get(Calendar.YEAR);
@@ -92,10 +96,9 @@ public class GetRouteFragment extends Fragment
     int day = c.get(Calendar.DAY_OF_MONTH);
 
 
-    
-   public GetRouteFragment() {  
-     // Required empty public constructor  
-   }  
+    public GetRouteFragment() {
+        // Required empty public constructor
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -109,16 +112,16 @@ public class GetRouteFragment extends Fragment
         View rootView = inflater.inflate(R.layout.fragment_get_route, parent, false);
         context = rootView.getContext();
 
-   // Get fromDate
-     fromDate = (ImageButton)rootView.findViewById(R.id.fromDate); // getting the image button in fragment_blank.xml  
-     routeFromDate = (TextView) rootView.findViewById(R.id.routeFromDate); // getting the TextView in fragment_blank.xml
+        // Get fromDate
+        fromDate = (ImageButton) rootView.findViewById(R.id.fromDate); // getting the image button in fragment_blank.xml
+        routeFromDate = (TextView) rootView.findViewById(R.id.routeFromDate); // getting the TextView in fragment_blank.xml
         // Get toDate
-        toDate = (ImageButton)rootView.findViewById(R.id.toDate);
+        toDate = (ImageButton) rootView.findViewById(R.id.toDate);
         routeToDate = (TextView) rootView.findViewById(R.id.routeToDate);
 
         //Get route button
 
-        routeButton = (Button)rootView.findViewById(R.id.getRoute);
+        routeButton = (Button) rootView.findViewById(R.id.getRoute);
 
         View.OnClickListener showDatePicker = new View.OnClickListener() {
             @Override
@@ -126,22 +129,28 @@ public class GetRouteFragment extends Fragment
                 final View vv = v;
 
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+
                     @Override
                     public void onDateSet(DatePicker view, int Year, int Month, int Day) {
-                        StringBuilder sb = new StringBuilder().append(Year).append("-").append(Month + 1).append("-").append(Day);
-                        String formattedDate = sb.toString();
-                        if (vv.getId() == R.id.fromDate ) { //From date was clicked {
+                        String formatMonth, formatDay;
+                        Month++;   // As month is from 0-11
+                        formatMonth =  (Month < 10) ? "0" + Month : "" + Month ;
+                        formatDay =  (Day < 10) ? "0" + Day : "" + Day ;
 
-                        routeFromDate.setText(formattedDate);
-                    } else {//EndDate button was clicked {
+                        StringBuilder sb = new StringBuilder().append(Year).append("-").append(formatMonth).append("-").append(formatDay);
+                        String formattedDate = sb.toString();
+                        if (vv.getId() == R.id.fromDate) { //From date was clicked {
+
+                            routeFromDate.setText(formattedDate);
+                        } else {//EndDate button was clicked {
                             routeToDate.setText(formattedDate);
-                    //do the stuff
-                }
+                            //do the stuff
+                        }
+                    }
+                }, year, month, day);
+                datePickerDialog.show();
             }
-        }, year, month, day);
-        datePickerDialog.show();
-    }
-};
+        };
         fromDate.setOnClickListener(showDatePicker);
         toDate.setOnClickListener(showDatePicker);
 
@@ -149,8 +158,37 @@ public class GetRouteFragment extends Fragment
             public void onClick(View v) {
                 // Log.e(TAG, "inside onclick" + ". ");
 
-                if  (validateDate())  {
+                if (validateDate()) {
                     populateRoute();
+                }
+
+            }
+        });
+
+//Get language from the spinner
+        populateLang() ;   // Populate Languages for Spinner
+        geolngSpinner = (Spinner) rootView.findViewById(R.id.geocode_lang);
+        // Create an ArrayAdapter using the string array and a default spinner layout
+        ArrayAdapter<Language> adapter = new ArrayAdapter<Language>(getContext(),android.R.layout.simple_spinner_dropdown_item, languageList);
+        // Apply the adapter to the spinner
+        geolngSpinner.setAdapter(adapter);
+        geolngSpinner.setOnItemSelectedListener(this);
+
+//  Get route detail button
+        routeDetailsButton = (Button) rootView.findViewById(R.id.getRouteDetails);
+        routeDetailsButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+
+                if (routeList != null && !routeList.isEmpty()) {   // if route is selected , populate the list and pass it to routedetail fragment for geocoding
+                    populateforgeocoding();
+                    Intent intent = new Intent(getContext(), RouteDetailActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelableArrayList("routelist", routeDetailList);
+                    bundle.putString("lang", geocode_lang);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(getContext(), "Please select Route", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -161,9 +199,22 @@ public class GetRouteFragment extends Fragment
 
         mapFragment.getMapAsync(this);
 
+        //Show route details option only when route is selected
+         langtextview =  (TextView) rootView.findViewById(R.id.routedisplayLang);
+        if (routeList == null || routeList.isEmpty()) {
+            routeDetailsButton.setEnabled(false);
+            geolngSpinner.setEnabled(false);
+            langtextview.setEnabled(false);
+            routeDetailsButton.setVisibility(View.GONE);
+            geolngSpinner.setVisibility(View.GONE);
+            langtextview.setVisibility(View.GONE);
+        }
+        else
+           {  enablebuttons();
+           }
+
         return rootView;
     }
-
 
 
     // on get route button click - do date validation - not null ; todate < fromdate
@@ -194,7 +245,6 @@ public class GetRouteFragment extends Fragment
         Log.i("inside map ready", "MAP");
 
 
-
         // Add a listener for polyline clicks that changes the clicked polyline's color.
         map.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
             @Override
@@ -205,35 +255,42 @@ public class GetRouteFragment extends Fragment
             }
         });
 
-       //ITI
-       // populateRoute();
+    }
+// Language Selected from Spinner
+    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
+        // An item was selected. You can retrieve the selected item using
+        Language templang = (Language) parent.getSelectedItem();
+        geocode_lang = templang.getId();
+        // geocode_lang = maplang();
     }
 
 
-    private void populateRoute()  {
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+    }
+
+    private void populateRoute() {
 
         // Use deviceId to have rest call based on deviceID.
         final long deviceId = getActivity().getIntent().getExtras().getLong(EXTRA_DEVICE_ID);
 
-        String todate = routeToDate.getText().toString() + "T23:59:59.000" ;
+        String todate = routeToDate.getText().toString() + "T23:59:59.000";
         String convertedToDate = convertDate(todate, TimeZone.getDefault().getID(), "UTC");
-        Log.i("todate: ", convertedToDate);
+        // Log.i("todate: ", convertedToDate);
 
-        String fromdate = routeFromDate.getText().toString() +  "T00:00:00.000";
+        String fromdate = routeFromDate.getText().toString() + "T00:00:00.000";
         String convertedFromDate = convertDate(fromdate, TimeZone.getDefault().getID(), "UTC");
 
-
-        Log.i("from date: ", convertedFromDate);
+        // Log.i("from date: ", convertedFromDate);
         final String from_date = convertedFromDate + "Z";
         final String to_date = convertedToDate + "Z";
         final String type = "%";
-
-
         final MainApplication application = (MainApplication) getActivity().getApplication();
         final WebService service = application.getService();
 
         service.getRouteEvents(deviceId, type, from_date, to_date).enqueue(new WebServiceCallback<List<Route>>(getContext()) {
-            final ProgressDialog  mProgress = ProgressDialog.show(getActivity(), "Generating Route", "Please wait", true, true);
+            final ProgressDialog mProgress = ProgressDialog.show(getActivity(), "Generating Route", "Please wait", true, true);
+
             @Override
             public void onSuccess(Response<List<Route>> response) {
                 routeList = response.body();
@@ -268,20 +325,31 @@ public class GetRouteFragment extends Fragment
         IconGenerator iconFactory = new IconGenerator(getContext());
 
         PolylineOptions options = new PolylineOptions().width(5).color(Color.BLUE);
-        int markerPositionIndex = 0 ;
+        int markerPositionIndex = 0;
         int numberofmarkers = 0;
 
         //Depending on number of points,show markers. For > 100000 show 1000; 50000- 1 lakh show 500 ; 10000-50000 show 50; <1000 show 10
-        if (routeList.size() >= 100000) { numberofmarkers = 1000; }
-        else { if ((routeList.size() >= 50000) && (routeList.size() < 100000))  { numberofmarkers = 500; }
-        else { if ((routeList.size() >= 10000) && (routeList.size() < 50000))  { numberofmarkers = 50; }
-        else { if ((routeList.size() >= 1000) && (routeList.size() < 10000))  { numberofmarkers = 25; }
-        else { numberofmarkers = 10;}
+        if (routeList.size() >= 100000) {
+            numberofmarkers = 1000;
+        } else {
+            if ((routeList.size() >= 50000) && (routeList.size() < 100000)) {
+                numberofmarkers = 500;
+            } else {
+                if ((routeList.size() >= 10000) && (routeList.size() < 50000)) {
+                    numberofmarkers = 50;
+                } else {
+                    if ((routeList.size() >= 1000) && (routeList.size() < 10000)) {
+                        numberofmarkers = 25;
+                    } else {
+                        numberofmarkers = 10;
+                    }
 
-        }}}
+                }
+            }
+        }
         Log.i("numberofmarker :", String.valueOf(numberofmarkers));
         //Depending on number of points,show markers. For > 100000 show 1000; 50000- 1 lakh show 500 ; 10000-50000 show 50; <1000 show 10
-        int markerStep = routeList.size() / numberofmarkers ;
+        int markerStep = routeList.size() / numberofmarkers;
         // Add point for polyline and also save the marker positions to add marker once the polyline is drawn
         // latLngList.clear();   // clear the list to avoid duplication
         // markerPosition.clear();
@@ -313,7 +381,7 @@ public class GetRouteFragment extends Fragment
                 .title("Start")   // change for first , last , position
                 .snippet("speed :" + firstroute.getSpeed() + "\n distance: " + firstroute.getAttributes().getDistance() +
                         "total distance: " + firstroute.getAttributes().getTotalDistance() +
-                        "\n devicetime: " + firstroute.getDeviceTime()));
+                        "\n devicetime: " + convertDate(firstroute.getDeviceTime(), "America/New_York", TimeZone.getDefault().getID())));
 
         firstMarker.showInfoWindow();
 
@@ -324,22 +392,27 @@ public class GetRouteFragment extends Fragment
 
         // add markers now
         //   MarkerOptions markerOptions = new MarkerOptions();
-        for (int k = markerStep; k < routeList.size(); k+= markerStep) { // Get the markers at the market step position
+        // Point number to display
+        int pointcnt = 2 ;
+        for (int k = markerStep; k < routeList.size(); k += markerStep) { // Get the markers at the market step position
             Route routemarker = routeList.get(k);  // Get details of the route point identified for marker
             //String markerTitle = (k == 0 ) ? "Start" : k + "th Marker" ;
-            String markerTitle = k + "th Point" ;
+            String markerTitle = pointcnt + "th Location";
             iconFactory.setStyle(IconGenerator.STYLE_DEFAULT);
             googleMap.addMarker(new MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(String.valueOf(k))))
+                    .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon(String.valueOf(pointcnt))))
                     .position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
                     .title(markerTitle)
                     .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
                             "total distance: " + routemarker.getAttributes().getTotalDistance() +
-                            "device time: " + routemarker.getDeviceTime())
+                            "device time: " + convertDate(routemarker.getDeviceTime(), "America/New_York", TimeZone.getDefault().getID()))
+
                     .anchor(iconFactory.getAnchorU(), iconFactory.getAnchorV()));
 
             Log.i("k:lat:long:st ", String.valueOf(k) + ":" + String.valueOf(routemarker.getLatitude()) +
-                    " " + ":" + String.valueOf(routemarker.getLongitude()) + ":" + routemarker.getServerTime());
+                    " " + ":" + String.valueOf(routemarker.getLongitude()) + ":" +
+                    routemarker.getServerTime());
+            pointcnt++;
 
         }
 
@@ -349,18 +422,19 @@ public class GetRouteFragment extends Fragment
         googleMap.addMarker(new MarkerOptions()
                 .icon(BitmapDescriptorFactory.fromBitmap(iconFactory.makeIcon("Stop")))
                 .position(new LatLng(routemarker.getLatitude(), routemarker.getLongitude()))
-                //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                        //.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
                 .title("End")   // change for first , last , position
                 .snippet("speed :" + routemarker.getSpeed() + "distance: " + routemarker.getAttributes().getDistance() +
-                        "total distance: " + routemarker.getAttributes().getTotalDistance() +
-                        "device time: " + routemarker.getDeviceTime()
+                                "total distance: " + routemarker.getAttributes().getTotalDistance() +
+                                "device time: " + convertDate(routemarker.getDeviceTime(), "America/New_York", TimeZone.getDefault().getID())
                 ));
 
 
-
         Log.i("inside actcreate", "MAP");
+       // enable buttons to get route details
+        enablebuttons();
 
-        /* FOR ROBERT TESTING
+        /* FOR geofence showing TESTING
         //  Showgeofence circle 1
 
         double geolat1 = 13.06364754974461;
@@ -413,8 +487,8 @@ public class GetRouteFragment extends Fragment
             sDateinto = totime.format(date); // Convert to String first
             Date dateInTo = formatter.parse(sDateinto); // Create a new Date object
 
-            Log.i("ToDate String: ", sDateinto);
-            Log.i("ToDate Object: ", formatter.format(dateInTo));
+//            Log.i("ToDate String: ", sDateinto);
+            //           Log.i("ToDate Object: ", formatter.format(dateInTo));
             return sDateinto;
         } catch (ParseException e) {
             Log.i("Date Conversion", "Error in parsing");
@@ -424,29 +498,27 @@ public class GetRouteFragment extends Fragment
     }
 
     public Boolean validateDate() {
-       boolean  dateflag = true;
-       String getFromDate = routeFromDate.getText().toString();
+        boolean dateflag = true;
+        String getFromDate = routeFromDate.getText().toString();
         String getToDate = routeToDate.getText().toString();
 
         try {
-        if ( getFromDate.isEmpty() || getToDate.isEmpty() )
-        {    Toast.makeText(context, "Please enter From and To date", Toast.LENGTH_SHORT).show();
-                dateflag = false ;
-        }
-        else
-        {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date validFromDate = sdf.parse(getFromDate);
-            Date validToDate = sdf.parse( getToDate);
-
-            if (validFromDate.after(validToDate)) {
-                Toast.makeText(context, "From date should be less than To date", Toast.LENGTH_SHORT).show();
+            if (getFromDate.isEmpty() || getToDate.isEmpty()) {
+                Toast.makeText(context, "Please enter From and To date", Toast.LENGTH_SHORT).show();
                 dateflag = false;
+            } else {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+                Date validFromDate = sdf.parse(getFromDate);
+                Date validToDate = sdf.parse(getToDate);
+
+                if (validFromDate.after(validToDate)) {
+                    Toast.makeText(context, "From date should be less than To date", Toast.LENGTH_SHORT).show();
+                    dateflag = false;
+                } else {
+                    dateflag = true;
+                }
             }
-            else
-            {dateflag = true; }
-        }
-        return dateflag ;
+            return dateflag;
         } catch (ParseException e) {
             Log.i("Date Conversion", "Error in parsing");
             return false;
@@ -454,4 +526,50 @@ public class GetRouteFragment extends Fragment
     }   // end of function
 
 
+    public void populateforgeocoding() {
+        int markerStep = routeList.size() / NUMBEROFGEOCODE;
+        Log.i("markerStep", String.valueOf(markerStep));
+
+        routeDetailList.clear(); // Making sure array is not having any left over value.
+        for (int k = 0; k < routeList.size(); k += markerStep) { // Get the markers at the market step position
+            routeDetailList.add(new RouteDetail(routeList.get(k).getLatitude(), routeList.get(k).getLongitude(), routeList.get(k).getServerTime()));
+            Log.i("forgeo", String.valueOf(k));
+
+        }
+        //print for debugging
+
+        for (int k = 0; k < routeDetailList.size(); k++) {
+            Log.i("route k:lat:lo:st ", String.valueOf(k) + ":" + routeDetailList.get(k).getLat() + " ** " + routeDetailList.get(k).getlon() + ":" +
+                    routeDetailList.get(k).getservertime());
+        }
+    }  // end populatateforgeocoding
+
+    private void populateLang() {
+
+        languageList.clear();
+        //Add Languages
+
+        languageList.add(new Language("en", "English"));
+        languageList.add(new Language("bn", "Bengali"));
+        languageList.add(new Language("hi", "Hindi"));
+        languageList.add(new Language("gu", "Gujrati"));
+        languageList.add(new Language("ml", "Malayalam"));
+        languageList.add(new Language("mr", "Marathi"));
+        languageList.add(new Language("ta", "Tamil"));
+        languageList.add(new Language("te", "Telgu"));
+
+    }
+
+    public void enablebuttons() {
+        routeDetailsButton.setEnabled(true);
+        geolngSpinner.setEnabled(true);
+        langtextview.setEnabled(true);
+        routeDetailsButton.setVisibility(View.VISIBLE);
+        geolngSpinner.setVisibility(View.VISIBLE);
+        langtextview.setVisibility(View.VISIBLE);
+    }
+
 }
+
+
+

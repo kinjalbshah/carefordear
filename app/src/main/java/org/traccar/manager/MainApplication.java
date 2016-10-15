@@ -63,6 +63,7 @@ public class MainApplication extends MultiDexApplication {
             callback.onServiceReady(client, retrofit, service);
         } else {
             if (callbacks.isEmpty()) {
+
                 initService();
             }
             callbacks.add(callback);
