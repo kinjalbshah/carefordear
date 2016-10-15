@@ -6,41 +6,32 @@
     >
     <TextView
         android:id="@+id/hd_routeid"
+        android:textColor="#800080"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:textColor="#1361C6"
         android:text="@string/hd_routeid"
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-
-     />
-
+         />
 
     <TextView
         android:id="@+id/hd_routetime"
+        android:textColor="#800080"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="15dp"
-        android:textColor="#1361C6"
         android:text="@string/hd_routetime"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
          />
 
     <TextView
         android:id="@+id/hd_routeaddress"
+        android:textColor="#800080"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="#1361C6"
         android:text="@string/hd_routeaddress"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:layout_below="@id/hd_routeid"
+        android:layout_alignParentRight="true"
          />
-
-
-
 
 </RelativeLayout>

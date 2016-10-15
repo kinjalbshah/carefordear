@@ -18,20 +18,17 @@
         android:id="@+id/routetime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingRight="8dp"
-        android:layout_alignBaseline="@+id/routesno"
-        android:layout_toRightOf="@+id/routesno"
         android:layout_marginTop="2dp"
         android:layout_centerHorizontal="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <TextView
+       <TextView
         android:id="@+id/routeaddress"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/routesno"
-        android:layout_marginTop="4dp"
         android:layout_marginLeft="2dp"
+        android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 

@@ -12,9 +12,10 @@ public class RouteDetail implements Parcelable {
     Double lat;
     Double lon;
     String servertime;
+    private String rgeocodeaddres;
 
-    public RouteDetail(int id, Double lat, Double lon, String servertime) {
-        this.id = id;
+    public RouteDetail(Double lat, Double lon, String servertime) {
+
         this.lat = lat;
         this.lon = lon;
         this.servertime = servertime;
@@ -37,6 +38,17 @@ public class RouteDetail implements Parcelable {
         return servertime;
     }
 
+    public String getRGeocodeAddress() {  return rgeocodeaddres ; }
+
+    public void setLatitude(Double latitude) {    this.lat = latitude;  }
+
+    public void setLongitude(Double longitude) { this.lon = longitude;  }
+
+    public void setFixTime(String fixTime) { this.servertime = fixTime;  }
+
+
+    public void setRGeocodeAddress(String address) { this.rgeocodeaddres = address;  }
+
 
     @Override
     public int describeContents() {
@@ -51,6 +63,7 @@ public class RouteDetail implements Parcelable {
         dest.writeDouble(lat);
         dest.writeDouble(lon);
         dest.writeString(servertime);
+        dest.writeString(rgeocodeaddres);
     }
 
     public RouteDetail(Parcel in) {
@@ -58,6 +71,7 @@ public class RouteDetail implements Parcelable {
         lat = in.readDouble();
         lon = in.readDouble();
         servertime = in.readString();
+        rgeocodeaddres = in.readString();
     }
 
     public static final Parcelable.Creator<RouteDetail> CREATOR = new Parcelable.Creator<RouteDetail>() {

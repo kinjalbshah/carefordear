@@ -27,8 +27,6 @@ public interface GeocodeService  {
 
 
     @GET("/maps/api/geocode/json")
-    Call<Geocodeobj> getAddress(@Query("latlng") String latlong);
-
-
+    Call<Geocodeobj> getAddress(@Query("latlng") String latlong, @Query("language") String lang);
 
 }

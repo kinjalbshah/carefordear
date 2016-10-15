@@ -83,5 +83,9 @@
     <string name="hd_routetime">Time</string>
     <string name="hd_routeaddress">Address</string>
 
+    <string name="routedisplayLang">Language</string>
+    <string name="get_route_detail">Route Details</string>
+
+
 
 </resources>
