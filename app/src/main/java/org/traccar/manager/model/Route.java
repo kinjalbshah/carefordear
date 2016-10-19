@@ -41,7 +41,13 @@ public class Route {
     private Long id;
 
     private Route_Attribute attributes;
+/*
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(latitude, longitude);
+    }
 
+*/
     /**
      *
      * @return

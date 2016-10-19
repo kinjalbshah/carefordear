@@ -31,5 +31,14 @@
         android:singleLine="false"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
+    <TextView
+        android:id="@+id/routeaddresstranslated"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/routeaddress"
+        android:layout_marginLeft="2dp"
+        android:singleLine="false"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
 
 </RelativeLayout>
