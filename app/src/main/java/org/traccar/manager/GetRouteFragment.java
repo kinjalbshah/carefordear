@@ -349,7 +349,11 @@ public class GetRouteFragment extends Fragment
         }
         Log.i("numberofmarker :", String.valueOf(numberofmarkers));
         //Depending on number of points,show markers. For > 100000 show 1000; 50000- 1 lakh show 500 ; 10000-50000 show 50; <1000 show 10
-        int markerStep = routeList.size() / numberofmarkers;
+        int markerStep = (routeList.size() < 10) ? 1:(routeList.size() / numberofmarkers);
+
+        Log.i("markerstep :", String.valueOf(markerStep));
+        Log.i("routelist.size :", String.valueOf(routeList.size()));
+
         // Add point for polyline and also save the marker positions to add marker once the polyline is drawn
         // latLngList.clear();   // clear the list to avoid duplication
         // markerPosition.clear();
@@ -527,7 +531,9 @@ public class GetRouteFragment extends Fragment
 
 
     public void populateforgeocoding() {
-        int markerStep = routeList.size() / NUMBEROFGEOCODE;
+
+        int markerStep = (routeList.size() < NUMBEROFGEOCODE) ? 1:(routeList.size() / NUMBEROFGEOCODE);
+
         Log.i("markerStep", String.valueOf(markerStep));
 
         routeDetailList.clear(); // Making sure array is not having any left over value.

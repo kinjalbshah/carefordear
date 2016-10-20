@@ -108,7 +108,8 @@ public class RouteDetailFragment extends Fragment {
            // Toast.makeText(getContext(), "add " + RouteDetaildisplay.getTranslatedaddress(), Toast.LENGTH_LONG).show();
            // routeaddress.setText(RouteDetaildisplay.getTranslatedaddress() );
 
-            //return complete view to render on screen
+            //return complete view to render on scre
+            // en
             return convertView;
         }
     }
@@ -210,7 +211,7 @@ public class RouteDetailFragment extends Fragment {
                 // As the calls are in async, wait till all 10 points have been reversegeocoded till calling the display.
                 Log.i("glc : lc", "" + globallistcounter + "" + flistcounter);
 
-                if (globallistcounter >= NUMBEROFGEOCODE + 1) {
+                if ((globallistcounter >= NUMBEROFGEOCODE + 1) || (globallistcounter >= routeDetailList.size())){
                     gettranslateaddressfunc();   // Get translated address using translate api
 
                 }
