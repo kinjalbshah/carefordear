@@ -5,15 +5,9 @@ package org.traccar.manager;
  */
 
         import android.util.Log;
-
-        import android.app.Activity;
-        import android.app.DatePickerDialog;
         import android.support.v4.app.Fragment;
 
-        import android.content.Intent;
         import android.os.Bundle;
-        import android.support.v4.app.ListFragment;
-        import android.support.v7.widget.PopupMenu;
         import android.util.Log;
         import android.view.LayoutInflater;
         import android.view.MenuItem;
@@ -27,7 +21,13 @@ package org.traccar.manager;
         import org.traccar.manager.model.GeocodeResult;
         import org.traccar.manager.model.Geocodeobj;
         import org.traccar.manager.model.RouteDetail;
+        import org.traccar.manager.model.TranslateAddress;
+        import org.traccar.manager.model.Translation;
+
+        import java.io.IOException;
+        import java.lang.reflect.Array;
         import java.util.ArrayList;
+        import java.util.HashMap;
         import java.util.List;
         import okhttp3.OkHttpClient;
         import okhttp3.ResponseBody;
@@ -44,6 +44,7 @@ package org.traccar.manager;
         import java.util.TimeZone;
         import java.util.concurrent.TimeUnit;
 
+
 /**
  * Created by cf4 on 23-08-2016.
  */
@@ -55,12 +56,16 @@ public class RouteDetailFragment extends Fragment {
     private static final int NUMBEROFGEOCODE = 10;
 
     public ArrayList<RouteDetail> routeDetailList = new ArrayList<RouteDetail>();
+    public TranslateAddress translateAddress;
+    public ArrayList<String> formattedAddressTranslate = new ArrayList<String>();
 
-    private Retrofit retrofitgeo;
-    private OkHttpClient httpclient;
-    private int  globallistcounter = 0;
 
-    private String geolang ;
+    private Retrofit retrofitgeo, retrofittrans;
+    private OkHttpClient httpclient, httpclienttrans;
+    //private Translate translate ;
+    private int globallistcounter = 0;
+
+    private String geolang;
 
 
     class PopupAdapter extends ArrayAdapter<RouteDetail> {
@@ -86,8 +91,9 @@ public class RouteDetailFragment extends Fragment {
             TextView routesno = (TextView) convertView.findViewById(R.id.routesno);
             TextView routetime = (TextView) convertView.findViewById(R.id.routetime);
             TextView routeaddress = (TextView) convertView.findViewById(R.id.routeaddress);
+            TextView routeaddresstranslated = (TextView) convertView.findViewById(R.id.routeaddresstranslated);
 
-            int pos = position+1;
+            int pos = position + 1;
             routesno.setText("" + pos);
             // Data is stored in server time which is US currently. Convert from Server time to India time for displaying
 
@@ -95,9 +101,15 @@ public class RouteDetailFragment extends Fragment {
             routetime.setText(convertedDate.substring(2, 19));
             routeaddress.setText(RouteDetaildisplay.getRGeocodeAddress());
 
-            Log.i("route address: ", RouteDetaildisplay.getRGeocodeAddress());
+        if (RouteDetaildisplay.getTranslatedaddress() != null) {
+                routeaddresstranslated.setText(RouteDetaildisplay.getTranslatedaddress());
+         }
 
-            //return complete view to render on screen
+           // Toast.makeText(getContext(), "add " + RouteDetaildisplay.getTranslatedaddress(), Toast.LENGTH_LONG).show();
+           // routeaddress.setText(RouteDetaildisplay.getTranslatedaddress() );
+
+            //return complete view to render on scre
+            // en
             return convertView;
         }
     }
@@ -128,20 +140,29 @@ public class RouteDetailFragment extends Fragment {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         // Rest calls logging
-       httpclient = new OkHttpClient.Builder()
+        httpclient = new OkHttpClient.Builder()
                 .readTimeout(0, TimeUnit.MILLISECONDS)
                 .addNetworkInterceptor(logging)
                 .build();
 
-         retrofitgeo = new Retrofit.Builder()
+        retrofitgeo = new Retrofit.Builder()
                 .client(httpclient)
                 .baseUrl("https://maps.googleapis.com")
                 .addConverterFactory(JacksonConverterFactory.create())
                 .build();
 
-        // routeDetailList.add( new RouteDetail( 13.0629419, 77.6394281,"2016-10-07T08:14:06.000-04:00")) ;
-        //
-        // routeDetailList.add( new RouteDetail("2016-10-07T10:08:26.000-04:00", -33.8696, 151.2094)) ;
+        //Keeping httpclient and retrofit seprate for translate as that will be called from geocode response
+
+        httpclienttrans = new OkHttpClient.Builder()
+                .readTimeout(0, TimeUnit.MILLISECONDS)
+                .addNetworkInterceptor(logging)
+                .build();
+
+        retrofittrans = new Retrofit.Builder()
+                .client(httpclienttrans)
+                .baseUrl("https://www.googleapis.com")
+                .addConverterFactory(JacksonConverterFactory.create())
+                .build();
 
         // For each point do the geocoding and populate the array
 
@@ -156,42 +177,43 @@ public class RouteDetailFragment extends Fragment {
 
           }
 
-            }
+    }
 
-    public void doReverseGeocode (final Double lat, final Double lon,  final int flistcounter) {
+    public void doReverseGeocode(final Double lat, final Double lon, final int flistcounter) {
 
-        String tmpLatLng = lat.toString() + "," + lon.toString() ;
+        String tmpLatLng = lat.toString() + "," + lon.toString();
         GeocodeService rgeocodeservice = retrofitgeo.create(GeocodeService.class);
-        final Call<Geocodeobj> call = rgeocodeservice.getAddress(tmpLatLng, geolang);
+      //  final Call<Geocodeobj> call = rgeocodeservice.getAddress(tmpLatLng, geolang);
+        final Call<Geocodeobj> call = rgeocodeservice.getAddress(tmpLatLng, "en"); //always calling in en as using translate
 
         call.enqueue(new Callback<Geocodeobj>() {
             @Override
             public void onResponse(Call<Geocodeobj> call, Response<Geocodeobj> response) {
 
                 Geocodeobj jsonobj1 = response.body();
-                globallistcounter++ ;    // Increment counter for number of points being processed.
+                globallistcounter++;    // Increment counter for number of points being processed.
 
                 if (jsonobj1.getStatus().equals("OK")) {   // Got results. Take the first result and populate array
                     List<GeocodeResult> geocodeResult = jsonobj1.getResults();
 
                     String formattedaddress = geocodeResult.get(0).getFormattedAddress();
 
+                   //Populate routedetaillist
                     routeDetailList.get(flistcounter).setRGeocodeAddress(formattedaddress);
 
-                    Log.i("OK", flistcounter + "" + lat +"" + lon + "" +  routeDetailList.get(flistcounter).getRGeocodeAddress());
+                    Log.i("OK", flistcounter + "" + lat + "" + lon + "" + routeDetailList.get(flistcounter).getRGeocodeAddress());
 
-                 //   Toast.makeText(getContext(), "Events retrieved succesfully", Toast.LENGTH_LONG).show();
-                 //   Toast.makeText(getContext(), routeDetailList.get(flistcounter).getRGeocodeAddress(), Toast.LENGTH_LONG).show();
-                }
-                else {   // No results found.
+                } else {   // No results found.
                     routeDetailList.get(flistcounter).setRGeocodeAddress("No Address found");
+
                 }
 
                 // As the calls are in async, wait till all 10 points have been reversegeocoded till calling the display.
-                Log.i("glc : lc", "" + globallistcounter + ""+ flistcounter );
+                Log.i("glc : lc", "" + globallistcounter + "" + flistcounter);
 
-                if (globallistcounter >= NUMBEROFGEOCODE + 1) {
-                    populateRouteDisplayList();
+                if ((globallistcounter >= NUMBEROFGEOCODE + 1) || (globallistcounter >= routeDetailList.size())){
+                    gettranslateaddressfunc();   // Get translated address using translate api
+
                 }
             }
 
@@ -210,7 +232,7 @@ public class RouteDetailFragment extends Fragment {
 
     public void populateRouteDisplayList() {
 
-       PopupAdapter routedetailAdapter = new PopupAdapter(routeDetailList);
+        PopupAdapter routedetailAdapter = new PopupAdapter(routeDetailList);
         // Attach the adapter to a ListView
         ListView listView = (ListView) getActivity().findViewById(R.id.lvRouteDetails);
         View headerView = LayoutInflater.from(getActivity()).inflate(R.layout.list_route_header, null);
@@ -219,6 +241,59 @@ public class RouteDetailFragment extends Fragment {
 
     }
 
+    public void gettranslateaddressfunc() {
+    GeocodeService translateservice = retrofittrans.create(GeocodeService.class);
+
+        formattedAddressTranslate.clear();
+
+        for (int i = 0 ; i < routeDetailList.size() ; i++) {
+            formattedAddressTranslate.add(i,routeDetailList.get(i).getRGeocodeAddress());
+        }
+
+    final Call<TranslateAddress> call = translateservice.getTranslatedAddress(geolang, "en", formattedAddressTranslate);
+
+        call.enqueue(new Callback<TranslateAddress>()
+
+                     {
+                         @Override
+                         public void onResponse
+                                 (Call<TranslateAddress> call, Response<TranslateAddress> response) {
+
+                             translateAddress = response.body();
+
+                             if (response.code() != 200) {
+                                 Log.i("Translate err ret code ", String.valueOf(response.code()));
+                                 Toast.makeText(getContext(), "Error in translation " + String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
+                             } else {  // proceeed only if translate API gave good results - status code 200
+                                 for (int i = 0; i < translateAddress.getData().getTranslations().size(); i++) {
+                                     String transadd = translateAddress.getData().getTranslations().get(i).getTranslatedText();
+                                     routeDetailList.get(i).setTranslatedaddress(transadd);
+
+                                   //  Log.i("Translated i ", i + routeDetailList.get(i).getTranslatedaddress());
+                                   //  Toast.makeText(getContext(), "i add: " + i + routeDetailList.get(i).getTranslatedaddress(), Toast.LENGTH_LONG).show();
+
+                                 }
+                                 //Display once the address is translated.
+
+
+                             }
+                             populateRouteDisplayList();  // Display the list
+
+                         }
+
+                         @Override
+                         public void onFailure(Call<TranslateAddress> call, Throwable t) {
+
+                             Toast.makeText(getContext(), "Translate retrieval failed. Please try again", Toast.LENGTH_LONG).show();
+                             String stacktrace = Log.getStackTraceString(t);
+                             Log.i("Translate call failed", stacktrace);
+
+                     }
+
+                 }
+
+    );
+}
     // Function to convert date from one timezone to another. It first sets string to fromtimezone and then converts to totimezone
 
     public static String convertDate(String inputdate, String fromtimezone, String totimezone)
