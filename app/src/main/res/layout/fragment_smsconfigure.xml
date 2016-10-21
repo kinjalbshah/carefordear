@@ -29,12 +29,14 @@
         android:imeOptions="actionDone"
         android:hint="Enter Tracker Phone" />
 
-    <Button android:id="@+id/setTrackerPhnoBt"
+    <ImageButton android:id="@+id/setTrackerPhnoBt"
         android:layout_column="1"
         android:layout_row="1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Set Tracker Phone"
+        android:src="@drawable/send"
+
         />
 
     <EditText
@@ -52,7 +54,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Set Admin Phone"
-        android:src="@android:drawable/ic_menu_send" />
+        android:src="@drawable/send" />
 
     <EditText
         android:id="@+id/sosPhoneNo1ET"
@@ -63,12 +65,14 @@
         android:inputType="phone"
         android:hint="Enter Phone 1 for SOS alert" />
 
-    <Button android:id="@+id/setSOSPhoneBt1"
+    <ImageButton android:id="@+id/setSOSPhoneBt1"
         android:layout_column="1"
         android:layout_row="3"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:text="Set SOS Phone 1"
+        android:src="@drawable/send"
+
        />
 
     <EditText
@@ -80,12 +84,14 @@
         android:inputType="phone"
         android:hint="Enter Phone 2 for SOS alert" />
 
-    <Button android:id="@+id/setSOSPhoneBt2"
+    <ImageButton android:id="@+id/setSOSPhoneBt2"
         android:layout_column="1"
         android:layout_row="4"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Set SOS Phone 2"/>
+        android:text="Set SOS Phone 2"
+        android:src="@drawable/send"
+        />
 
     <EditText
         android:id="@+id/sosPhoneNo3ET"
@@ -96,12 +102,14 @@
         android:inputType="phone"
         android:hint="Enter Phone 3 for SOS alert" />
 
-    <Button android:id="@+id/setSOSPhoneBt3"
+    <ImageButton android:id="@+id/setSOSPhoneBt3"
         android:layout_column="1"
         android:layout_row="5"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Set SOS Phone 3"/>
+        android:text="Set SOS Phone 3"
+        android:src="@drawable/send"
+        />
 
     <EditText
         android:id="@+id/sosPhoneNo4ET"
@@ -112,21 +120,25 @@
         android:inputType="phone"
         android:hint="Enter Phone 4 for SOS alert" />
 
-    <Button android:id="@+id/setSOSPhoneBt4"
+    <ImageButton android:id="@+id/setSOSPhoneBt4"
         android:layout_column="1"
         android:layout_row="6"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Set SOS Phone 4"/>
+        android:text="Set SOS Phone 4"
+        android:src="@drawable/send"
+        />
 
 
-    <Button android:id="@+id/getTrackerPositionBt"
+    <ImageButton android:id="@+id/getTrackerPositionBt"
         android:layout_column="0"
         android:layout_row="7"
         android:layout_columnSpan="2"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:text="Get Tracker Position"/>
+        android:text="Get Tracker Position"
+        android:src="@drawable/send"
+        />
 
 
 
